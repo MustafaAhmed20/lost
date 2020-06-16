@@ -1,7 +1,12 @@
 from flask import Flask
+from flask_sqlalchemy import SQLAlchemy	
+
+from dotenv import load_dotenv
 
 def create_app():
-	
+	# load the variables from the env file!
+	load_dotenv()
+
 	from . import models #, routes, services
 	app = Flask(__name__)
 
