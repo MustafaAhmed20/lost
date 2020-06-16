@@ -3,14 +3,13 @@ DEBUG = True
 
 # Define the application directory
 import os
+
+
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))  
 
-# Define the database - we are working with
-# SQLite for this example
-
-"""
-SQLALCHEMY_DATABASE_URI = 'sqlite:///' + os.path.join(BASE_DIR, 'app.db')
-"""
+# database config
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+SQLALCHEMY_TRACK_MODIFICATIONS =False
 DATABASE_CONNECT_OPTIONS = {}
 
 # Application threads. A common general assumption is
@@ -24,7 +23,7 @@ CSRF_ENABLED     = True
 
 # Use a secure, unique and absolutely secret key for
 # signing the data. 
-CSRF_SESSION_KEY = "secret"
+CSRF_SESSION_KEY = os.getenv("secret1")
 
 # Secret key for signing cookies
-SECRET_KEY = "secret"
+SECRET_KEY = os.getenv("secret2")
