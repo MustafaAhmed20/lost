@@ -25,7 +25,6 @@ class Status(db.Model):
 
 	users = db.relationship('Users', backref='status', lazy='dynamic')
 
-
 class Permission(db.Model):
 	"""permission table for the users"""
 	

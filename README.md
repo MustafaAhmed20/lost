@@ -1,4 +1,4 @@
-# lost
+# Lost
 The server side of "The Lost" project, which is an app to help find the lost people especially the children
 
 ## Getting Started
@@ -17,13 +17,13 @@ pip install -r requirements.txt
 you need to have a file ``` .env ``` in side ```project/ ``` directory with those variables:
 
 ```
-SQLALCHEMY_DATABASE_URI = #your database URL
+SQLALCHEMY_DATABASE_URI = # your database URL
 
-secret1 = secret string for security
-secret2 = secret string for security
+secret1 = # secret string for security
+secret2 = # secret string for security
 ```
 
-## Running the tests
+## Running the app
 
 ```
 python run.py
