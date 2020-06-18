@@ -13,8 +13,6 @@ class Person(db.Model):
 	# the photos of the person
 	photos = db.relationship('Photos', lazy='dynamic')
 
-	operation = db.relationship('Operations', lazy='dynamic', backref='person', uselist=False)
-
 class Age(db.Model):
 	"""This table represents the age ranges for persons"""
 	__tablename__ = 'age'

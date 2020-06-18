@@ -29,8 +29,11 @@ class Operations(db.Model):
 	lat = db.Column(db.Float(10,6))
 	lng = db.Column(db.Float(10,6))
 
-	# the person 
-	person = db.Column(db.Integer, db.ForeignKey('person.id'))
+	# This object represents the thing is lost or found (person or other thing)
+	object_id = db.Column(db.Integer, nullable=False)
+	# This will save the neme of the table object (Person)
+	# then used with 'eval' Function to get the object
+	object_table_name = db.Column(db.String(10), nullable=False, default='Person')
 
 class Type_operation(object):
 	"""Define the type of the operation. (lost - found)"""
