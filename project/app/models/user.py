@@ -14,6 +14,9 @@ class Users(db.Model):
 
 	status_id = db.Column(db.Integer, db.ForeignKey('status.id'))
 
+	# the operations this user created
+	operations = db.relationship('Operations', backref='user', lazy='dynamic')
+
 class Status(db.Model):
 	""" This table represent the statuses of the user
 		active , wait activation or inactive"""
