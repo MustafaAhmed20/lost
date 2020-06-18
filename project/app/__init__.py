@@ -1,7 +1,5 @@
 from flask import Flask
-from flask_sqlalchemy import SQLAlchemy	
-
-from dotenv import load_dotenv
+from .extensions import load_dotenv
 
 def create_app():
 	# load the variables from the env file!
