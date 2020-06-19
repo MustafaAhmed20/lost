@@ -7,15 +7,6 @@ class Operations(db.Model):
 	__tablename__ = 'operations'
 	id = db.Column(db.Integer, primary_key=True)
 
-	# type of the operation
-	type_id = db.Column(db.Integer, db.ForeignKey('type_operation.id'))
-
-	# status of the operation
-	status_id = db.Column(db.Integer, db.ForeignKey('status_operation.id'))
-
-	# country of the operation
-	country_id = db.Column(db.Integer, db.ForeignKey('country.id'))
-
 	# date of add to the system
 	add_date = db.Column(db.DATETIME, default=datetime.datetime.now())
 
@@ -34,8 +25,18 @@ class Operations(db.Model):
 	# This will save the neme of the table object (Person)
 	# then used with 'eval' Function to get the object
 	object_table_name = db.Column(db.String(10), nullable=False, default='Person')
+	
 
-class Type_operation(object):
+	# type of the operation
+	type_id = db.Column(db.Integer, db.ForeignKey('type_operation.id'))
+
+	# status of the operation
+	status_id = db.Column(db.Integer, db.ForeignKey('status_operation.id'))
+
+	# country of the operation
+	country_id = db.Column(db.Integer,  db.ForeignKey('country.id'))
+
+class Type_operation(db.Model):
 	"""Define the type of the operation. (lost - found)"""
 	__tablename__ = 'type_operation'
 	id = db.Column(db.Integer, primary_key=True)
@@ -44,7 +45,7 @@ class Type_operation(object):
 
 	operations = db.relationship('Operations', backref='type', lazy='dynamic')
 
-class Status_operation(object):
+class Status_operation(db.Model):
 	"""Define the status of the operation. (active - on hold - closed)"""
 	__tablename__ = 'status_operation'
 	id = db.Column(db.Integer, primary_key=True)
@@ -53,7 +54,7 @@ class Status_operation(object):
 
 	operations = db.relationship('Operations', backref='status', lazy='dynamic')
 
-class Country(object):
+class Country(db.Model):
 	"""represents the countries that  the app operating in"""
 	__tablename__ = 'country'
 	id = db.Column(db.Integer, primary_key=True)

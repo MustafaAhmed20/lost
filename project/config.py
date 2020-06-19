@@ -12,7 +12,7 @@ if not os.getenv('SQLALCHEMY_DATABASE_URI') or not os.getenv('secret1'):
 	raise FileNotFoundError('environment variables not Found!')
 
 # database config
-SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI')
+SQLALCHEMY_DATABASE_URI = os.getenv('SQLALCHEMY_DATABASE_URI') + os.getenv('DATABASE_NAME_DEVELOPMENT')
 SQLALCHEMY_TRACK_MODIFICATIONS =False
 DATABASE_CONNECT_OPTIONS = {}
 
