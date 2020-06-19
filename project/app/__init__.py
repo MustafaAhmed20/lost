@@ -11,7 +11,9 @@ def create_app():
 	# Configurations
 	app.config.from_object('config')
 
-	models.init_app(app)
+	
+	models.db.init_app(app)
+	
 	#routes.init_app(app)
 	#services.init_app(app)
 	return app
