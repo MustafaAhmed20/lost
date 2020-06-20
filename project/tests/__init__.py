@@ -25,7 +25,12 @@ class TestConfig(unittest.TestCase):
 	""" The base test class. all test Inherits from this class """
 
 	def setUp(self):
-		# crate the database if not created!
+		"""
+		Create the database if not created!
+		
+		NOTE: this part work with mysql database, 
+		if you use any other database you may consider this part and make the necessary changes
+		"""
 		try:
 			db.drop_all()
 			db.create_all()
