@@ -1,4 +1,5 @@
 # Lost
+
 The server side of "The Lost" project, which is an app to help find the lost people especially the children
 
 ## Getting Started
@@ -15,7 +16,7 @@ Then install the requirements with:
 pip install -r requirements.txt
 ```
 
-you need to have a file ``` .env ``` in side ```project/ ``` directory with those variables:
+you need to have a file ``` .env ``` inside ```project/ ``` directory with those variables:
 
 
 ```
@@ -37,6 +38,10 @@ use this command to run all the tests in ```tests\```
 ```
 python -m unittest
 ```
+
+## warning
+
+In those files ``` \project\run.py``` and ``` \project\tests\__init__.py``` there is database connection specific for mysql . you may consider change it for other type of databases!
 
 ## Running the app
 
