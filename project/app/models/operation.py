@@ -59,5 +59,6 @@ class Country(db.Model):
 	__tablename__ = 'country'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(20), nullable=False)
+	phone_code = db.Column(db.Integer, unique=True)
 
 	operations = db.relationship('Operations', backref='country', lazy='dynamic')
