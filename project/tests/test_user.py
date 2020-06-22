@@ -1,4 +1,4 @@
-from . import TestConfig, app
+from . import TestConfig
 
 
 class TestUser(TestConfig):

@@ -8,7 +8,7 @@ class Users(db.Model):
 	name = db.Column(db.String(80), nullable=False)
 	password = db.Column(db.TEXT, nullable=False)
 	
-	phone = db.Column(db.TEXT)
+	phone = db.Column(db.String(12), nullable=False, unique=True)
 		
 	permission_id = db.Column(db.Integer, db.ForeignKey('permission.id'))
 

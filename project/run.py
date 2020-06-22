@@ -4,7 +4,7 @@ def check_database():
 	"""check if the database found. if not , create the database and then create the tables.
 	NOTE: this part work with mysql database, 
 	if you use any other database you may consider this part and make the necessary changes """
-	from app.models import db
+	from app.models import db, defaultData
 	from flask_sqlalchemy import sqlalchemy
 	import os
 	
@@ -21,6 +21,9 @@ def check_database():
 
 		# now create the tables 
 		db.create_all(app=fullApp)
+		
+		# add the default Data
+		defaultData(app=fullApp, db=db)
 
 if __name__ == "__main__":
 	

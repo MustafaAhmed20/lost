@@ -6,8 +6,6 @@ class Person(db.Model):
 
 	name = db.Column(db.String(80))
 	
-	photos = db.Column(db.TEXT)
-
 	age_id = db.Column(db.Integer, db.ForeignKey('age.id'))
 
 	# the photos of the person
@@ -22,7 +20,7 @@ class Age(db.Model):
 	min_age = db.Column(db.Integer, nullable=False)
 	max_age = db.Column(db.Integer, nullable=False)
 
-	persons = db.relationship('Persons', backref='age', lazy='dynamic')
+	persons = db.relationship('Person', backref='age', lazy='dynamic')
 
 class Photos(db.Model):
 	""""""
@@ -31,3 +29,7 @@ class Photos(db.Model):
 
 	#link to the photo
 	link = db.Column(db.TEXT)
+
+	# this need to get enhance to be able to connect to multible tables
+	person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
+
