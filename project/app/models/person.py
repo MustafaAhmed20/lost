@@ -1,4 +1,4 @@
-from . import db
+from . import db, generic_relationship
 
 class Person(db.Model):
 	__tablename__ = 'person'
@@ -7,9 +7,6 @@ class Person(db.Model):
 	name = db.Column(db.String(80))
 	
 	age_id = db.Column(db.Integer, db.ForeignKey('age.id'))
-
-	# the photos of the person
-	photos = db.relationship('Photos', lazy='dynamic')
 
 class Age(db.Model):
 	"""This table represents the age ranges for persons"""
@@ -23,13 +20,17 @@ class Age(db.Model):
 	persons = db.relationship('Person', backref='age', lazy='dynamic')
 
 class Photos(db.Model):
-	""""""
+	"""store the links of the photos and the object that this photo belong to"""
 	__tablename__ = 'photos'
 	id = db.Column(db.Integer, primary_key=True)
 
 	#link to the photo
 	link = db.Column(db.TEXT)
 
-	# this need to get enhance to be able to connect to multible tables
-	person_id = db.Column(db.Integer, db.ForeignKey('person.id'))
+	# This is used to discriminate between the linked tables.
+	object_type = db.Column(db.Unicode(255))
 
+	# This is used to point to the primary key of the linked row.
+	object_id = db.Column(db.Integer)
+
+	object = generic_relationship(object_type, object_id)

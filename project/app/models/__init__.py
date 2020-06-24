@@ -1,5 +1,5 @@
 from ..extensions import SQLAlchemy
-from ..extensions import datetime, generate_password_hash
+from ..extensions import datetime, generate_password_hash, generic_relationship
 import os
 import uuid
 

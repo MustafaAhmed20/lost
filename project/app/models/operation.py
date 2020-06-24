@@ -1,4 +1,4 @@
-from . import db
+from . import db, generic_relationship
 from . import datetime
 
 class Operations(db.Model):
@@ -20,12 +20,13 @@ class Operations(db.Model):
 	lat = db.Column(db.Float(10,6))
 	lng = db.Column(db.Float(10,6))
 
-	# This object represents the thing is lost or found (person or other thing)
-	object_id = db.Column(db.Integer, nullable=False)
-	# This will save the neme of the table object (Person)
-	# then used with 'eval' Function to get the object
-	object_table_name = db.Column(db.String(10), nullable=False, default='Person')
-	
+	# This is used to discriminate between the linked tables.
+	object_type = db.Column(db.Unicode(255))
+
+	# This is used to point to the primary key of the linked row.
+	object_id = db.Column(db.Integer)
+
+	object = generic_relationship(object_type, object_id)
 
 	# type of the operation
 	type_id = db.Column(db.Integer, db.ForeignKey('type_operation.id'))
