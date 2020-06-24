@@ -2,7 +2,7 @@ from ..models import db, Users, Status, Permission
 from ..extensions import check_password_hash, generate_password_hash
 import uuid
 
-
+# User model
 def login(userPhone, userPassword):
 	""" return True if the phone and the password are correct!"""
 	
@@ -61,3 +61,46 @@ def changeUserPermission(userPublicId, toPermission):
 		return True
 	return False
 
+def changeUserStatus(userPublicId, toStatus):
+	"""change the User Permission"""
+
+	# check if the user exist .
+	user = Users.query.filter_by(public_id=userPublicId).first()
+	if not user:
+		return False
+
+	status = Status.query.filter_by(name=toStatus).first()
+
+	if status:
+		status.users.append(user)
+		db.session.commit()
+		return True
+	return False
+
+# Status model
+def addStatus(name):
+	""" add new user Status """
+	try:
+		status = Status(name=name)
+
+		db.session.add(status)
+		db.session.commit()	
+	except Exception as e:
+		return False
+	
+
+	return True
+
+# Permission model
+def addPermission(name):
+	""" add new user Status """
+	try:
+		permission = Permission(name=name)
+
+		db.session.add(permission)
+		db.session.commit()	
+	except Exception as e:
+		return False
+	
+
+	return True

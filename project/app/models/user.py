@@ -24,7 +24,7 @@ class Status(db.Model):
 	__tablename__ = 'status'
 	
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(10), nullable=False)
+	name = db.Column(db.String(10), nullable=False, unique=True)
 
 	users = db.relationship('Users', backref='status', lazy='dynamic')
 
@@ -34,7 +34,7 @@ class Permission(db.Model):
 	__tablename__ = 'permission'
 
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(20), nullable=False)
+	name = db.Column(db.String(20), nullable=False, unique=True)
 
 	users = db.relationship('Users', backref='permission', lazy='dynamic')
 
