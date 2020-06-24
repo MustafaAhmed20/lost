@@ -26,11 +26,16 @@ DATABASE_NAME_TESTING = # the testig database name
 
 secret1 = # secret string for security
 secret2 = # secret string for security
+
+admin_pass = # admin password
+admin_phone = # admin Phone number
 ```
 
 **warning:** you need to get sure those variables set correctly or you will get weird errors thrown on you!
 
 i used mysql database , so the QLALCHEMY_DATABASE_URI = mysql://username:password@server/
+
+``` admin_pass ``` and ``` admin_phone ``` used with default data in testing and development
 
 ## Running the tests
 use this command to run all the tests in ```tests\```
