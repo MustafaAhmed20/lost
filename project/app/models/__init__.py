@@ -48,10 +48,14 @@ def defaultData(app, db):
 
 	db.session.add(sudan)
 	db.session.add(egypt)
+	
 	db.session.add(active)
 	db.session.add(on_hold)
+	db.session.add(closed)
+	
 	db.session.add(lost)
 	db.session.add(found)
+	
 	db.session.add(active_user)
 	db.session.add(wait)
 	db.session.add(in_active)
