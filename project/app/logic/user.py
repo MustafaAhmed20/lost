@@ -77,6 +77,20 @@ def changeUserStatus(userPublicId, toStatus):
 		return True
 	return False
 
+def getUser(id=None, publicId =None, phone=None):
+	""" return the user object or None if not exist"""
+	if not any ([id, publicId, phone]):
+		return None
+
+	if id :
+		return Users.query.get(id)
+
+	if publicId:
+		return Users.query.filter_by(public_id=publicId).first()
+
+	if phone:
+		return Users.query.filter_by(phone=phone).first()		
+
 # Status model
 def addStatus(name):
 	""" add new user Status """
