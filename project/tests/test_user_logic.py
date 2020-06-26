@@ -105,3 +105,17 @@ class TestUserLogic(TestConfig):
 
 		self.assertTrue(permission)
 		self.assertEqual(result, True, 'add permission Failed')
+
+class TestUserLogic2(TestConfig):
+	
+	def test_getUser(self):
+		""" add user the get it"""
+		addUser(name='mustafa', phone=12345678, password=123)
+
+		user = getUser(phone=12345678)
+
+
+		self.assertTrue(user)
+		self.assertEqual(user.name, 'mustafa', 'get user Failed')
+
+
