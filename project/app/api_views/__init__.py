@@ -31,7 +31,7 @@ def adminRequired(f):
 			make_response(jsonify(result), 400)
 
 		try:
-			payload = jwt.decode(token, current_app.config.get('SECRET_KEY'))
+			payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
 			userPublicId = payload['user']
 		except jwt.ExpiredSignatureError :
 			result['status'] = status['failure']
@@ -72,7 +72,7 @@ def loginRequired(f):
 			make_response(jsonify(result), 400)
 
 		try:
-			payload = jwt.decode(token, current_app.config.get('SECRET_KEY'))
+			payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
 			userPublicId = payload['user']
 		except jwt.ExpiredSignatureError :
 			result['status'] = status['failure']

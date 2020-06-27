@@ -12,7 +12,7 @@ def login(userPhone, userPassword):
 		return False
 
 	# check if the password is correct
-	if not check_password_hash(user.password, userPassword):
+	if not check_password_hash(user.password, str(userPassword)):
 		return False
 
 	return True
