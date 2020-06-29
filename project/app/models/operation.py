@@ -47,6 +47,10 @@ class Type_operation(db.Model):
 
 	operations = db.relationship('Operations', backref='type', lazy='dynamic')
 
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'name':self.name}
+
 class Status_operation(db.Model):
 	"""Define the status of the operation. (active - on hold - closed)"""
 	__tablename__ = 'status_operation'
@@ -56,6 +60,10 @@ class Status_operation(db.Model):
 
 	operations = db.relationship('Operations', backref='status', lazy='dynamic')
 
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'name':self.name}
+
 class Country(db.Model):
 	"""represents the countries that  the app operating in"""
 	__tablename__ = 'country'
@@ -64,3 +72,7 @@ class Country(db.Model):
 	phone_code = db.Column(db.Integer, unique=True)
 
 	operations = db.relationship('Operations', backref='country', lazy='dynamic')
+
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'name':self.name, 'phone_code':self.phone_code}

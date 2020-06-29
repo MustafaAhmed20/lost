@@ -8,6 +8,10 @@ class Person(db.Model):
 	
 	age_id = db.Column(db.Integer, db.ForeignKey('age.id'))
 
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'name':self.name, 'age':self.age_id}
+
 class Age(db.Model):
 	"""This table represents the age ranges for persons"""
 	__tablename__ = 'age'
@@ -18,6 +22,10 @@ class Age(db.Model):
 	max_age = db.Column(db.Integer, nullable=False)
 
 	persons = db.relationship('Person', backref='age', lazy='dynamic')
+
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'minage':self.min_age, 'maxage':self.max_age}
 
 class Photos(db.Model):
 	"""store the links of the photos and the object that this photo belong to"""
@@ -34,3 +42,7 @@ class Photos(db.Model):
 	object_id = db.Column(db.Integer)
 
 	object = generic_relationship(object_type, object_id)
+
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'link':self.link, 'object':str(self.object_type)}

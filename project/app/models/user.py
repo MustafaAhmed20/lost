@@ -17,6 +17,11 @@ class Users(db.Model):
 	# the operations this user created
 	operations = db.relationship('Operations', backref='user', lazy='dynamic')
 
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.public_id, 'name':self.name, 'phone':self.phone, 'permissio':permission_id,\
+				'status':status_id}
+
 class Status(db.Model):
 	""" This table represent the statuses of the user
 		active , wait activation or inactive"""
@@ -28,6 +33,10 @@ class Status(db.Model):
 
 	users = db.relationship('Users', backref='status', lazy='dynamic')
 
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'name':self.name}
+
 class Permission(db.Model):
 	"""permission table for the users"""
 	
@@ -37,4 +46,8 @@ class Permission(db.Model):
 	name = db.Column(db.String(20), nullable=False, unique=True)
 
 	users = db.relationship('Users', backref='permission', lazy='dynamic')
+
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'name':self.name}
 
