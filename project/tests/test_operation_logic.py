@@ -8,7 +8,7 @@ from app.logic.person import Person, addPerson
 
 import datetime
 
-class TestUserLogic(TestConfig):
+class TestOperationLogic(TestConfig):
 	""" tests the Operation model operations """
 
 	def test_addCountry(self):
@@ -115,3 +115,67 @@ class TestUserLogic(TestConfig):
 		self.assertEqual(operation.object_id, person.id, 	"operation don't have the right object")
 		self.assertEqual(float(operation.lat), lat, 	"operation don't have the right lat")
 		self.assertEqual(float(operation.lng), lng, 	"operation don't have the right lng")
+
+class TestOperationLogic2(TestConfig):
+	""" tests the Operation model operations """
+
+	def test_getCountry(self):
+		""" get the Countries"""
+
+		result = getCountry()
+
+		self.assertTrue(result, 'no Countries')
+		
+
+		result = getCountry(name='sudan')
+
+		self.assertTrue(result, 'no Country sudan')
+		self.assertEqual(result.name, 'sudan')
+
+		result = getCountry(id=1)
+
+		self.assertTrue(result, 'no Country with id=1')
+		self.assertEqual(result.id, 1)
+		
+		result = getCountry(phoneCode=249)
+
+		self.assertEqual(result.phone_code, 249)
+		self.assertTrue(result, 'no Country with id=1')
+
+	def test_getStatus_operation(self):
+		""" get the Countries"""
+
+		result = getStatus_operation()
+
+		self.assertTrue(result, 'no Status_operation')
+		
+
+		result = getStatus_operation(name='active')
+
+		self.assertTrue(result, 'no Status_operation active')
+		self.assertEqual(result.name, 'active')
+
+		result = getStatus_operation(id=1)
+
+		self.assertEqual(result.id, 1)
+		self.assertTrue(result, 'no Status_operation with id=1')
+
+	def test_getType_operation(self):
+		""" get the Countries"""
+
+		result = getType_operation()
+
+		self.assertTrue(result, 'no Type_operation')
+		
+
+		result = getType_operation(name='lost')
+
+		self.assertTrue(result, 'no Type_operation lost')
+		self.assertEqual(result.name, 'lost')
+
+
+		result = getType_operation(id=1)
+		
+		self.assertEqual(result.id, 1)
+		self.assertTrue(result, 'no Type_operation with id=1')
+		

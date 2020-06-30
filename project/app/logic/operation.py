@@ -15,6 +15,21 @@ def addCountry(name, phoneCode):
 
 	return True
 
+def getCountry(id=None, name=None, phoneCode=None):
+	""" return the country object or None if not exist
+		return a list of all countries if no perm passed"""
+
+	if not any([id, name, phoneCode]):
+		return Country.query.all()
+	if id :
+		return Country.query.get(id)
+	if name:
+		return Country.query.filter_by(name=name).first()
+	if phoneCode:
+		return Country.query.filter_by(phone_code=phoneCode).first()
+
+	return None
+
 # Status_operation model
 def addStatus_operation(name):
 	""" return True if Status operation added correctly else False """
@@ -29,6 +44,19 @@ def addStatus_operation(name):
 
 	return True
 
+def getStatus_operation(id=None, name=None):
+	""" return the Status object or None if not exist
+		return a list of all Status if no perm passed"""
+
+	if not any([id, name]):
+		return Status_operation.query.all()
+	if id :
+		return Status_operation.query.get(id)
+	if name:
+		return Status_operation.query.filter_by(name=name).first()	
+
+	return None
+
 # Type_operation model
 def addType_operation(name):
 	""" return True if Type operation added correctly else False """
@@ -42,6 +70,20 @@ def addType_operation(name):
 		return False
 
 	return True
+
+def getType_operation(id=None, name=None):
+	""" return the Type object or None if not exist
+		return a list of all Types if no perm passed"""
+
+	if not any([id, name]):
+		return Type_operation.query.all()
+	if id :
+		return Type_operation.query.get(id)
+	if name:
+		return Type_operation.query.filter_by(name=name).first()
+	
+
+	return None
 
 # Operations model
 def addOperation(type_id, status_id, country_id, object, userPublicId, date,lat=None, lng=None):
