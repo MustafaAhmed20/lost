@@ -7,6 +7,8 @@ from functools import wraps
 
 # import the logic
 from ..logic.user import *
+from ..logic.person import *
+from ..logic.operation import *
 
 # the login token valid time
 minutes = 30
@@ -91,3 +93,5 @@ def loginRequired(f):
 	return mustlogin
 
 from .user import *
+from .person import *
+from .operation import *
