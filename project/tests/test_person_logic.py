@@ -69,3 +69,28 @@ class TestUserLogic(TestConfig):
 		self.assertEqual(personFinded, None, 'person not deleted')
 		self.assertEqual(photos, [], 'photos not deleted')
 		self.assertEqual(photo, None, 'photo not deleted')
+
+class TestUserLogic2(TestConfig):
+	""" tests the Person model operations """
+
+	def test_getAge(self):
+		""" get the Countries"""
+
+		result = getAge()
+
+		self.assertTrue(result, 'no Ages')
+		
+
+		result = getAge(minAge=1, maxAge=10)
+
+		self.assertTrue(result, 'no age with this perm')
+		self.assertEqual(result.min_age, 1)
+		self.assertEqual(result.max_age, 10)
+
+		result = getAge(id=1)
+
+		self.assertTrue(result, 'no Age with id=1')
+		self.assertEqual(result.id, 1)
+		
+		
+		

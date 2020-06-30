@@ -42,6 +42,21 @@ def addAge(minAge, maxAge):
 
 	return True
 
+def getAge(id=None, minAge=None, maxAge=None):
+	""" return the age object or None if not exist
+		return a list of all ages if no id passed."""
+
+	if not any([id, minAge, maxAge]):
+		return Age.query.all()
+
+	if id:
+		return Age.query.get(id)
+	elif all([minAge, maxAge]):
+		return Age.query.filter_by(min_age=minAge, max_age=maxAge).first()
+	else:
+		return None
+		
+
 # Photos model
 def addPhoto(link, object):
 	""" add new photo
