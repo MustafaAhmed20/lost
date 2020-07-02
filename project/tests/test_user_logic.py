@@ -26,8 +26,8 @@ class TestUserLogic(TestConfig):
 
 		user = Users.query.filter_by(name='test').first()
 
-		self.assertTrue(user)
-		self.assertEqual(result, True, 'add user Failed')
+		self.assertTrue(user, 'add user Failed')
+		self.assertEqual(result.name, 'test', 'add user Failed')
 
 	def test_addUser2(self):
 		'''add new user'''
@@ -41,7 +41,7 @@ class TestUserLogic(TestConfig):
 
 		self.assertIn(user, inactive.users)
 		self.assertTrue(user)
-		self.assertEqual(result, True, 'add user Failed')
+		self.assertEqual(result.name, 'test', 'add user Failed')
 
 	def test_toAdmin(self):
 		""" add user then promote to admin"""
@@ -94,8 +94,8 @@ class TestUserLogic(TestConfig):
 
 		status = Status.query.filter_by(name='deleted').first()
 
-		self.assertTrue(status)
-		self.assertEqual(result, True, 'add status Failed')
+		self.assertTrue(status, 'add status Failed')
+		self.assertEqual(result.name, 'deleted', 'add status Failed')
 
 	def test_addPermission(self):
 		""" add new user permission """
@@ -103,8 +103,8 @@ class TestUserLogic(TestConfig):
 
 		permission = Permission.query.filter_by(name='super_user').first()
 
-		self.assertTrue(permission)
-		self.assertEqual(result, True, 'add permission Failed')
+		self.assertTrue(permission, 'add permission Failed')
+		self.assertEqual(result.name, 'super_user', 'add permission Failed')
 
 class TestUserLogic2(TestConfig):
 	

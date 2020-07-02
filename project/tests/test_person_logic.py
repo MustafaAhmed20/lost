@@ -12,8 +12,8 @@ class TestUserLogic(TestConfig):
 
 		person = Person.query.filter_by(name='mustafa').first()
 
-		self.assertTrue(person)
-		self.assertEqual(result, True, 'add person Failed')
+		self.assertTrue(person, 'add person Failed')
+		self.assertEqual(result.name, 'mustafa', 'add person Failed')
 
 	def test_addAge(self):
 		'''add new age'''
@@ -22,8 +22,8 @@ class TestUserLogic(TestConfig):
 
 		age = Age.query.filter_by(min_age=40, max_age=50).first()
 
-		self.assertTrue(age)
-		self.assertEqual(result, True, 'add age Failed')
+		self.assertTrue(age, 'add age Failed')
+		self.assertEqual(result.min_age, 40, 'add age Failed')
 
 	def test_addPhoto(self):
 		""" add new photo to a new person """
@@ -38,8 +38,8 @@ class TestUserLogic(TestConfig):
 
 		photo = Photos.query.filter_by(link=link).first()
 
-		self.assertTrue(photo)
-		self.assertEqual(result, True, 'add photo Failed')
+		self.assertTrue(photo, 'add photo Failed')
+		self.assertEqual(result.link, link, 'add photo Failed')
 		self.assertEqual(photo.object, person, 'not the same person')
 		self.assertEqual(photo.link, link, 'not the same link')
 

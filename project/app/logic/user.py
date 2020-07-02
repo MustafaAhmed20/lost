@@ -18,7 +18,7 @@ def login(userPhone, userPassword):
 	return True
 
 def addUser(name, phone, password, status='active', permission='user'):
-	""" return True if user added correctly else False """
+	""" return The new user object if user added correctly else False """
 	try:
 		user = Users(name=name, password=generate_password_hash(str(password)),
 				public_id=uuid.uuid4, phone=phone)
@@ -39,7 +39,7 @@ def addUser(name, phone, password, status='active', permission='user'):
 		db.session.add(user)
 		db.session.commit()
 
-		return True
+		return user
 	
 	except Exception as e:
 		
@@ -93,7 +93,8 @@ def getUser(id=None, publicId =None, phone=None):
 
 # Status model
 def addStatus(name):
-	""" add new user Status """
+	""" add new user Status 
+	return the new status object if added or false if failed"""
 	try:
 		status = Status(name=name)
 
@@ -103,11 +104,12 @@ def addStatus(name):
 		return False
 	
 
-	return True
+	return status
 
 # Permission model
 def addPermission(name):
-	""" add new user Status """
+	""" add new user Status 
+	return the new permission object if added or false if failed"""
 	try:
 		permission = Permission(name=name)
 
@@ -117,4 +119,4 @@ def addPermission(name):
 		return False
 	
 
-	return True
+	return permission
