@@ -29,14 +29,19 @@ def getPerson(id=None):
 	if id:
 		return Age.query.get(id)
 
-def deletePerson(id):
-	""" delete the photos then delete the person"""
+def deletePerson(id=None, object=None):
+	""" delete the photos then delete the person
+		perm : object = the person object"""
 
-	person = Person.query.get(id)
-	if not Person:
+	if id:
+		person = Person.query.get(id)
+	elif object:
+		person = object
+	
+	if not person:
 		return False
 
-	photos = Photos.query.filter(Photos.object.is_type(Person)).all()
+	photos = Photos.query.filter_by(object=person).all()
 
 	# delete the photos
 	for photo in photos:
@@ -91,3 +96,16 @@ def addPhoto(link, object):
 		return False
 
 	return photo
+
+def getPohto(id=None, object=None):
+	""" return the photo object or None if not exist
+		return a list of all ages if no id passed."""
+
+	if not any([id, object]):
+		return Photos.query.all()
+
+	if id:
+		return Photos.query.get(id)
+
+	if object:
+		return Photos.query.filter_by(object=object).all()

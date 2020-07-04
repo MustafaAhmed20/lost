@@ -91,6 +91,25 @@ class TestUserLogic2(TestConfig):
 
 		self.assertTrue(result, 'no Age with id=1')
 		self.assertEqual(result.id, 1)
-		
-		
-		
+
+	def test_getPhotos(self):
+		""" add photos then find it"""
+
+		link = 'this some link'
+		object = addPerson(name='mustafa')
+
+		newPhoto =  addPhoto(link=link, object=object)
+
+		result = getPohto(id=newPhoto.id)
+
+		self.assertTrue(result, 'no Photo')
+		self.assertEqual(result.link, link)
+
+		result = getPohto(object=object)
+
+		self.assertTrue(result, 'no photo')
+		self.assertEqual(result[0].object_id, object.id)
+
+		result = getPohto()
+
+		self.assertTrue(result, 'no photos')
