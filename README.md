@@ -29,6 +29,8 @@ secret2 = # secret string for security
 
 admin_pass = # admin password
 admin_phone = # admin Phone number
+
+IMEGE_TEST_NAME = # name of photo for testing
 ```
 
 **warning:** you need to get sure those variables set correctly or you will get weird errors thrown on you!

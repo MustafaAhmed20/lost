@@ -7,6 +7,8 @@ import os
 
 BASE_DIR = os.path.abspath(os.path.dirname(__file__))
 
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'imeges')
+
 # make sure the system don't run without environment variables
 if not os.getenv('SQLALCHEMY_DATABASE_URI') or not os.getenv('secret1'):
 	raise FileNotFoundError('environment variables not Found!')
