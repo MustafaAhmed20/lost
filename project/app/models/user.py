@@ -1,6 +1,7 @@
 from . import db
 
 class Users(db.Model):
+	__name__ = 'Users'
 	__tablename__ = 'users'
 	id = db.Column(db.Integer, primary_key=True)
 	public_id = db.Column(db.String(50), unique=True)
@@ -25,7 +26,7 @@ class Users(db.Model):
 class Status(db.Model):
 	""" This table represent the statuses of the user
 		active , wait activation or inactive"""
-
+	__name__ = 'Status'
 	__tablename__ = 'status'
 	
 	id = db.Column(db.Integer, primary_key=True)
@@ -39,7 +40,7 @@ class Status(db.Model):
 
 class Permission(db.Model):
 	"""permission table for the users"""
-	
+	__name__ = 'Permission'
 	__tablename__ = 'permission'
 
 	id = db.Column(db.Integer, primary_key=True)

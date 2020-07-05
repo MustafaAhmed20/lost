@@ -3,15 +3,15 @@ from . import datetime
 
 class Operations(db.Model):
 	""" The main table represents the operations in the app"""
-
+	__name__ = 'Operations'
 	__tablename__ = 'operations'
 	id = db.Column(db.Integer, primary_key=True)
 
-	# date of add to the system
+	# date and time of add to the system
 	add_date = db.Column(db.DATETIME, default=datetime.datetime.now())
 
 	# date of operation (lost or found)
-	date = db.Column(db.DATETIME, nullable=False)
+	date = db.Column(db.DATE, nullable=False)
 
 	# the user created this operation
 	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
@@ -38,8 +38,18 @@ class Operations(db.Model):
 	# country of the operation
 	country_id = db.Column(db.Integer,  db.ForeignKey('country.id'), nullable=False)
 
+	def toDict(self):
+		""" return dict representation of the object """
+		return {'id':self.id, 'date':self.date,\
+				'object_type':self.object.__name__, 'object':self.object.toDict(),\
+				'country_id':self.country_id,\
+				'type_id':self.type_id, 'status_id':self.status_id,\
+				'lat':float(self.lat) if self.lat else None,\
+				'lng':float(self.lng) if self.lng else None}
+
 class Type_operation(db.Model):
 	"""Define the type of the operation. (lost - found)"""
+	__name__ = 'Type_operation'
 	__tablename__ = 'type_operation'
 	id = db.Column(db.Integer, primary_key=True)
 
@@ -53,6 +63,7 @@ class Type_operation(db.Model):
 
 class Status_operation(db.Model):
 	"""Define the status of the operation. (active - on hold - closed)"""
+	__name__ = 'Status_operation'
 	__tablename__ = 'status_operation'
 	id = db.Column(db.Integer, primary_key=True)
 
@@ -66,6 +77,7 @@ class Status_operation(db.Model):
 
 class Country(db.Model):
 	"""represents the countries that  the app operating in"""
+	__name__ = 'Country'
 	__tablename__ = 'country'
 	id = db.Column(db.Integer, primary_key=True)
 	name = db.Column(db.String(20), nullable=False)

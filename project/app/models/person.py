@@ -1,6 +1,7 @@
 from . import db, generic_relationship
 
 class Person(db.Model):
+	__name__ = 'Person'
 	__tablename__ = 'person'
 	id = db.Column(db.Integer, primary_key=True)
 
@@ -10,10 +11,12 @@ class Person(db.Model):
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.id, 'name':self.name, 'age':self.age_id}
+		return {'id':self.id, 'name':self.name, 'age':self.age_id,\
+				'photos':[photo.link for photo in Photos.query.filter_by(object=self).all()]}
 
 class Age(db.Model):
 	"""This table represents the age ranges for persons"""
+	__name__ = 'Age'
 	__tablename__ = 'age'
 	id = db.Column(db.Integer, primary_key=True)
 
@@ -29,6 +32,7 @@ class Age(db.Model):
 
 class Photos(db.Model):
 	"""store the links of the photos and the object that this photo belong to"""
+	__name__ = 'Photos'
 	__tablename__ = 'photos'
 	id = db.Column(db.Integer, primary_key=True)
 
