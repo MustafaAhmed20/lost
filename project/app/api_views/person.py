@@ -16,8 +16,8 @@ def addAgetRoute():
 	# get the post data
 	post_data = request.get_json()
 	
-	min_age = post_data.get('minage')
-	max_age = post_data.get('maxage')
+	min_age = post_data.get('min_age')
+	max_age = post_data.get('max_age')
 	
 	if not min_age or not max_age:
 		result['status'] = status['failure']

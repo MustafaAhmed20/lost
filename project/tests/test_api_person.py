@@ -31,7 +31,7 @@ class TestPersonApi(TestConfig):
 		# add new age
 
 		headers = {'token':data['data']['token']}
-		data = {'minage':40, 'maxage':50}
+		data = {'min_age':40, 'max_age':50}
 
 
 		# post requset
@@ -51,7 +51,7 @@ class TestPersonApi(TestConfig):
 		# add new age
 
 		headers = {'token':''}
-		data = {'minage':40, 'maxage':50}
+		data = {'min_age':40, 'max_age':50}
 
 
 		# post requset
