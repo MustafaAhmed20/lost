@@ -1,5 +1,7 @@
 from ..models import db, Operations, Type_operation, Status_operation, Country, Users
 
+# import all the class that operation can use it as object
+from ..models import Person
 
 # Country model
 def addCountry(name, phoneCode):
@@ -102,9 +104,9 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 	try:
 		operation = Operations(object = object, date = date)
 		if lat:
-			operation.lat = lat
+			operation.lat = float(lat)
 		if lng:
-			operation.lng = lng
+			operation.lng = float(lng)
 
 		if not type:
 			type = getType_operation(name='lost')
@@ -131,4 +133,60 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 		return False
 
 	return operation
+
+def getOperation(**filters):
+	""" return the Operation object if filterd with id object or None if not exist. 
+		return a list of Operation objects with filters apply	
+		return a list of all Operations if no perm passed
+		raise value error if wrong filter passed
+		
+		filters :
+		id 			:Operation id
+		country_id	:country id of the  
+		object 		:object type of the Operation
+		user_id 	:user id who responsible of the Operation
+		date 		: date of the Operation
+
+	 	add_date 	:add to system date
+	 	type_id		:type id of the Operation
+	 	status_id	:status of the Operation
+	 	lat 		:lat of the Operation
+	 	lng			:lng of the Operation
+		"""
+
+	availableFilters = ['id', 'country_id', 'object', 'user_id', 'date',\
+	 'add_date', 'type_id', 'status_id', 'lat', 'lng']
+
+	for filter in filters:
+		if filter not in availableFilters:
+			raise ValueError(f'not valid filter {filter}')
+
+	baseQuery = Operations.query
+	if not filters:
+		return baseQuery.all()
+	
+	if 'id' in filters:
+		return baseQuery.get(filters['id'])
+	
+	if 'object' in filters:
+		
+		try:
+			object = eval(filters['object'])
+		except Exception as e:
+			raise e
+
+		baseQuery = baseQuery.filter(Operations.object.is_type(object))
+
+		del filters['object']
+	
+	try:
+		if 'lat' in filters:
+			filters['lat'] = float(filters['lat'])
+		if 'lng' in filters:
+			filters['lng'] = float(filters['lng'])
+	except Exception as e:
+		raise e
+
+	return baseQuery.filter_by(**filters).all()
+
 

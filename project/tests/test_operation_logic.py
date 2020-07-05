@@ -179,3 +179,68 @@ class TestOperationLogic2(TestConfig):
 		self.assertEqual(result.id, 1)
 		self.assertTrue(result, 'no Type_operation with id=1')
 		
+	def test_getOperation(self):
+		""" add operation then get the operations with filters"""
+
+		# the user who make this operation
+		userPublicId = Users.query.filter_by(name='admin').first().public_id
+
+		# the object this operation point to
+		addPerson(name='mustafa')
+		person = Person.query.first()
+		
+		type = Type_operation.query.filter_by(name='lost').first()
+		status = Status_operation.query.filter_by(name='active').first()
+		country = Country.query.first()
+
+		lat = 48.856613
+		lng = 2.352222
+
+		result = addOperation(type=type, status=status, country=country, object=person,\
+							 userPublicId= userPublicId, date=datetime.date.today(), lat=lat, lng=lng)
+
+		operation = Operations.query.first()
+
+
+		self.assertTrue(operation, 'add new operation Failed')
+		self.assertTrue(result, 'add new operation Failed')
+		
+		
+		# get the operation with 'getoperation'
+
+		# no filters
+		result = getOperation()
+
+		self.assertTrue(result, 'no operations')
+		self.assertEqual(len(result), 1, 'no operations')
+
+		# filter with object class type
+		result = getOperation(object=person.__name__)
+		
+		self.assertTrue(result, 'no operations')
+		self.assertEqual(result[0].object.name, 'mustafa')
+
+		# filter with id
+		previousOperationID = result[0].id
+		result = getOperation(id=previousOperationID)
+		
+		self.assertTrue(result, 'no operations')
+		self.assertEqual(result.id, previousOperationID)
+
+		# filter with country id
+		result = getOperation(country_id=country.id)
+		
+		self.assertTrue(result, 'no operations')
+		self.assertEqual(result[0].object.name, 'mustafa')
+
+		# filter with object class type and 
+		result = getOperation(object=person.__name__, date=datetime.date.today())
+		
+		self.assertTrue(result, 'no operations')
+		self.assertEqual(result[0].object.name, 'mustafa')
+
+		# filter with object class type lat
+		result = getOperation(object=person.__name__, lat=lat)
+		
+		self.assertTrue(result, 'no operations')
+		self.assertEqual(float(result[0].lat), lat)
