@@ -123,3 +123,4 @@ def saveFile(file):
 from .user import *
 from .person import *
 from .operation import *
+from .app import *
