@@ -31,5 +31,5 @@ if __name__ == "__main__":
 	check_database()
 	
 	# Run the server.
-	#fullApp.run(host='0.0.0.0', port=8080)
-	fullApp.run()
+	fullApp.run(host='0.0.0.0', port=8080)
+	#fullApp.run()
