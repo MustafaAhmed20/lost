@@ -39,3 +39,15 @@ def addAgetRoute():
 	result['status'] = status['success']
 	return make_response(jsonify(result), 201)
 
+@api.route('/getage', methods=['GET'])
+def getAgeRoute():
+	""" Return a list of ages"""
+
+	result = baseApi.copy()
+
+	# all ages
+	age = getAge()
+
+	result['status'] = status['success']
+	result['data']['age'] = [c.toDict() for c in age]
+	return make_response(jsonify(result), 200)

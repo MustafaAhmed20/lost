@@ -28,7 +28,7 @@ class Age(db.Model):
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.id, 'minage':self.min_age, 'maxage':self.max_age}
+		return {'id':self.id, 'min_age':self.min_age, 'max_age':self.max_age}
 
 class Photos(db.Model):
 	"""store the links of the photos and the object that this photo belong to"""

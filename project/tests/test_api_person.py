@@ -65,3 +65,18 @@ class TestPersonApi(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 202)
 
+	def test_getage(self):
+
+		""" test the /getcountry route"""
+
+		result = self.client_app.get("/api/getage", content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['age'])
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+	
