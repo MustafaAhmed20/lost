@@ -10,6 +10,9 @@ def create_app():
 
 	# Configurations
 	app.config.from_object('config')
+
+	# create the app with static file serve the imeges
+	app.static_url_path = 'static/imeges'
 	
 	models.db.init_app(app)
 

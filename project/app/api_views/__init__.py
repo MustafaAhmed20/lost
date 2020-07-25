@@ -113,7 +113,8 @@ def saveFile(file):
 		path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
 		file.save(path)
 
-		return path
+		#return path
+		return f'static/imeges/{filename}'
 
 	except Exception as e:
 		
