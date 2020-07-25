@@ -1,5 +1,5 @@
 .env
-project/imeges/
+project/app/static/imeges/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
