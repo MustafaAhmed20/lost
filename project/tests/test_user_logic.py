@@ -1,6 +1,7 @@
 """ tests the logic/user.py"""
 from . import TestConfig
 from app.logic.user import *
+from app.models import Status
 
 import os
 
@@ -117,5 +118,55 @@ class TestUserLogic2(TestConfig):
 
 		self.assertTrue(user)
 		self.assertEqual(user.name, 'mustafa', 'get user Failed')
+
+	def test_registerUser(self):
+		''' regster a user and get the Verification code'''
+
+		result = registerUser(name='mustafa', phone=12345678, password=123)
+
+		# success register
+		self.assertTrue(result)
+
+		user, code = result
+
+		self.assertEqual(user.name, 'mustafa', 'get user Failed')
+		self.assertEqual(code.user_id, user.id, 'create code Failed')
+
+		# valid code
+		self.assertTrue(code.code)
+		self.assertEqual(len(code.code), 6, 'create code length Failed')
+		
+	def test_registerUser2(self):
+		''' register a User then confirm the number '''
+
+		# first register the user
+		result = registerUser(name='mustafa', phone=12345678, password=123)
+
+		# success register
+		self.assertTrue(result)
+
+		user, code = result
+
+		self.assertEqual(user.name, 'mustafa', 'get user Failed')
+		self.assertEqual(code.user_id, user.id, 'create code Failed')
+
+		# valid code
+		self.assertTrue(code.code)
+		self.assertEqual(len(code.code), 6, 'create code length Failed')
+
+		# Verify the user
+
+		result = VerifyUser(user.id, code.code)
+
+		# success Verification
+		self.assertTrue(result)
+
+		# make sure the user is active now
+		active = Status.query.filter_by(name='active').first()
+
+		self.assertIn(user, active.users)
+
+
+
 
 

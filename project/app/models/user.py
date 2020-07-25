@@ -1,4 +1,5 @@
 from . import db
+from . import datetime
 
 class Users(db.Model):
 	__name__ = 'Users'
@@ -52,3 +53,16 @@ class Permission(db.Model):
 		""" return dict representation of the object """
 		return {'id':self.id, 'name':self.name}
 
+class UserVerificationNumber(db.Model):
+	''' this model used to save Verification Numbers'''
+
+	__name__ = 'UserVerificationNumber'
+	__tablename__ = 'User_verification_number'
+
+	id = db.Column(db.Integer, primary_key=True)
+	
+	user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+
+	code =  db.Column(db.String(10), nullable=False, unique=True)
+
+	create_date = db.Column(db.DATETIME, default=datetime.datetime.now())

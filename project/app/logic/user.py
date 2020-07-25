@@ -1,6 +1,8 @@
-from ..models import db, Users, Status, Permission
-from ..extensions import check_password_hash, generate_password_hash
+from ..models import db, Users, Status, Permission, UserVerificationNumber
+from ..extensions import check_password_hash, generate_password_hash, datetime
+
 import uuid
+import random
 
 # User model
 def login(userPhone, userPassword):
@@ -44,7 +46,75 @@ def addUser(name, phone, password, status='active', permission='user'):
 	except Exception as e:
 		
 		return False
-	
+
+def registerUser(name, phone, password):
+	''' register new User with 'wait activation' Status 
+		return (user, code) if success else false'''
+
+	result = addUser(name, phone, password, status='wait', permission='user')
+
+	if result:
+		# add Verification Number to the user
+
+		while True:
+			# check the random if it is unique or not
+			number = ''.join([str(random.randint(0,9)) for _ in range(6)])
+			object = UserVerificationNumber.query.filter_by(code=number).first()
+			if object:
+				# repete
+				continue
+			code = UserVerificationNumber(code=number, user_id=result.id)
+
+			# save the code
+			db.session.add(code)
+			db.session.commit()
+			break
+
+		return result, code
+
+	else:
+		return result
+
+def VerifyUser(user_id, code, maxTimeDays=1):
+	''' if code is correct change user Status to 'active' '''
+
+	if maxTimeDays < 1:
+		raise  ValueError('not valid days difference')
+
+	# get the Verification details
+	VerifyCode = UserVerificationNumber.query.filter_by(user_id=user_id).first()
+
+	# no code for this user
+	if not VerifyCode:
+		return False
+
+	# check if the user exist .
+	user = Users.query.get(user_id)
+	if not user:
+		return False
+
+	# check if its to late
+	now = datetime.datetime.now()
+
+	diff = now - VerifyCode.create_date
+
+	if diff.days >= maxTimeDays:
+		# to late
+		# delete the code
+		db.session.delete(VerifyCode)
+		return False
+
+	# check the code
+
+	if code != VerifyCode.code:
+		return False
+
+	# delete the Verify Code
+	db.session.delete(VerifyCode)
+
+	# make the user active
+	return changeUserStatus(user.public_id, 'active')
+
 def changeUserPermission(userPublicId, toPermission):
 	"""change the User Permission"""
 
