@@ -156,7 +156,7 @@ class TestUserLogic2(TestConfig):
 
 		# Verify the user
 
-		result = VerifyUser(user.id, code.code)
+		result = VerifyUser(user_id=user.id, code=code.code)
 
 		# success Verification
 		self.assertTrue(result)

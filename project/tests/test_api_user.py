@@ -4,6 +4,9 @@ from app.logic.operation import getCountry
 import json
 import os
 
+# 'UserVerificationNumber' model
+from app.models import UserVerificationNumber
+
 class TestUserApi(TestConfig):
 	""" tests the user section of the api """
 
@@ -293,4 +296,111 @@ class TestUserApi2(TestConfig):
 		self.assertEqual(data['message'],'User already exists. Please Log in.')
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 202)
+
+class TestUserApi3(TestConfig):
+	""" tests the register user and confirm number"""
+
+	def test_registerUser(self):
+		''' regster user'''
+
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		data = {'phone':'+249929596047', 'password':'19823h', 'country_id':country.id, 'name':'mustafa'}
+		
+		# post requset
+		result = self.client_app.post("/api/registeruser", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 201)
+
+		# get sure the code get added to database
+		code = UserVerificationNumber.query.first()
+
+		self.assertTrue(code, 'no Verification Number')
+
+	def test_registerUser2(self):
+		''' regster user - invalid phone number'''
+
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		data = {'phone':'00929596047', 'password':'19823h', 'country_id':country.id, 'name':'mustafa'}
+		
+		# post requset
+		result = self.client_app.post("/api/registeruser", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'failure')
+		self.assertEqual(data['message'], 'phone number not pass the validation')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 400)
+
+	def test_registerUser3(self):
+		''' regster user - invalid password'''
+
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		data = {'phone':'929596047', 'password':'123h', 'country_id':country.id, 'name':'mustafa'}
+		
+		# post requset
+		result = self.client_app.post("/api/registeruser", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'failure')
+		self.assertEqual(data['message'], 'Password not pass the validation')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 400)
+
+	def test_registerUser4(self):
+		''' register User then conform it '''
+
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		data = {'phone':'+249929596047', 'password':'19823h', 'country_id':country.id, 'name':'mustafa'}
+		
+		# post requset
+		result = self.client_app.post("/api/registeruser", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 201)
+
+		# get sure the code get added to database
+		code = UserVerificationNumber.query.first()
+
+		self.assertTrue(code, 'no Verification Number')
+
+
+		# now conform the number
+
+		headers = {'token':data['data']['token']}
+		data = {'code':code.code}
+
+		# post requset
+		result = self.client_app.post("/api/conformuserphone", data=json.dumps(data),\
+				headers=headers, content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
 

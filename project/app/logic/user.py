@@ -75,22 +75,29 @@ def registerUser(name, phone, password):
 	else:
 		return result
 
-def VerifyUser(user_id, code, maxTimeDays=1):
+def VerifyUser(code, user_id=None, userPublicId=None, maxTimeDays=1):
 	''' if code is correct change user Status to 'active' '''
 
 	if maxTimeDays < 1:
 		raise  ValueError('not valid days difference')
 
+	if not any([user_id, userPublicId]):
+		raise  ValueError('no user data passed')
+
+	# check if the user exist .
+	if user_id:
+		user = Users.query.get(user_id)
+	elif userPublicId:
+		user = Users.query.filter_by(public_id=userPublicId).first()
+	
+	if not user:
+		return False		
+
 	# get the Verification details
-	VerifyCode = UserVerificationNumber.query.filter_by(user_id=user_id).first()
+	VerifyCode = UserVerificationNumber.query.filter_by(user_id=user.id).first()
 
 	# no code for this user
 	if not VerifyCode:
-		return False
-
-	# check if the user exist .
-	user = Users.query.get(user_id)
-	if not user:
 		return False
 
 	# check if its to late
@@ -106,7 +113,7 @@ def VerifyUser(user_id, code, maxTimeDays=1):
 
 	# check the code
 
-	if code != VerifyCode.code:
+	if code.replace(' ', '') != VerifyCode.code:
 		return False
 
 	# delete the Verify Code
