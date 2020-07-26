@@ -11,6 +11,7 @@ from ..extensions import secure_filename
 from ..logic.user import *
 from ..logic.person import *
 from ..logic.operation import *
+from ..logic.app import *
 
 # the login token valid time
 minutes = 30

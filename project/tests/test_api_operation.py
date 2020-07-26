@@ -3,6 +3,7 @@ from app.api_views.operation import *
 from app.logic.operation import getCountry
 from app.logic.person import getPerson, getPohto
 
+
 import json
 import os
 from io import BytesIO
@@ -18,7 +19,10 @@ class TestOperationApi(TestConfig):
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -61,7 +65,10 @@ class TestOperationApi(TestConfig):
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -203,16 +210,21 @@ class TestOperationApi2(TestConfig):
 		admin_phone = os.getenv('admin_phone')
 		admin_password = os.getenv('admin_pass')
 
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 	
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
 
 		data = json.loads(result.data.decode())
 		
-		token = data['data']['token']
 
 		self.assertEqual(data['status'], 'success')
 		self.assertEqual(result.status_code, 200)
+
+		token = data['data']['token']
+
 
 		# add new operation
 		headers = {'token':token}
@@ -262,16 +274,21 @@ class TestOperationApi2(TestConfig):
 		admin_phone = os.getenv('admin_phone')
 		admin_password = os.getenv('admin_pass')
 
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 	
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
 
 		data = json.loads(result.data.decode())
 		
-		token = data['data']['token']
 
 		self.assertEqual(data['status'], 'success')
 		self.assertEqual(result.status_code, 200)
+
+		token = data['data']['token']
+
 
 		# add new operation
 		headers = {'token':token}

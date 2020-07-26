@@ -17,6 +17,7 @@ def validatePhoneNumber(value, countryCode, maxPhoneLength):
 	# remove any spaces
 	value = value.replace(' ', '')
 
+
 	pattren = fr'^(?:((\+|00)?(?P<code>{countryCode}))|0)?(?P<phone>\d{ {maxPhoneLength} })$'
 
 	match = re.search (pattren, value)

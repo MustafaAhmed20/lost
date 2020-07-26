@@ -1,5 +1,6 @@
 from . import TestConfig
 from app.api_views.user import *
+from app.logic.operation import getCountry
 import json
 import os
 
@@ -14,7 +15,10 @@ class TestUserApi(TestConfig):
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -33,8 +37,11 @@ class TestUserApi(TestConfig):
 		
 		if not admin_phone:
 			raise ValueError('Environment variables not found!')
+
+		# the user country
+		country = getCountry(phoneCode=20)
 		
-		data = {'phone':admin_phone, 'password':'wrong'}
+		data = {'phone':admin_phone, 'password':'wrong', 'country_id':country.id}
 		
 		# post requset
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -74,8 +81,11 @@ class TestUserApi2(TestConfig):
 		
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
+
+		# the user country
+		country = getCountry(phoneCode=20)
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		resultAdmin = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -90,8 +100,11 @@ class TestUserApi2(TestConfig):
 
 		# add user
 
-		userData = {'name':'mustafa', 'phone':'1234567890', 'password':123,\
-					 'status':'active', 'permission':'user'}
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		userData = {'name':'mustafa', 'phone':'0123456789', 'password':'12334a',\
+					 'status':'active', 'permission':'user', 'country_id':country.id}
 
 		headers = {'token':data['data']['token']}
 		result = self.client_app.post("/api/adduser", data=json.dumps(userData),\
@@ -113,7 +126,10 @@ class TestUserApi2(TestConfig):
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		resultAdmin = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -128,8 +144,11 @@ class TestUserApi2(TestConfig):
 
 		# add user
 
-		userData = {'name':'mustafa', 'phone':'1234567890', 'password':123,\
-					 'status':'active', 'permission':'user'}
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		userData = {'name':'mustafa', 'phone':'0123456789', 'password':'12334a',\
+					 'status':'active', 'permission':'user', 'country_id':country.id}
 
 		headers = {'token':data['data']['token']}
 		result = self.client_app.post("/api/adduser", data=json.dumps(userData),\
@@ -146,7 +165,7 @@ class TestUserApi2(TestConfig):
 		# try add user with the new user
 
 		# login
-		normalUserData = {'phone':'1234567890', 'password':123}
+		normalUserData = {'phone':'0123456789', 'password':'12334a', 'country_id':country.id}
 		noremalUserResult = self.client_app.post("/api/login", data=json.dumps(normalUserData), content_type='application/json')
 
 		normalUser = json.loads(noremalUserResult.data.decode())
@@ -161,7 +180,7 @@ class TestUserApi2(TestConfig):
 
 		# add user
 		
-		testUserData = {'name':'test', 'phone':'0123456789', 'password':123,\
+		testUserData = {'name':'test', 'phone':'0123456789', 'password':'123es2',\
 					 'status':'active', 'permission':'user'}
 
 		headers = {'token': normalUserToken}
@@ -184,7 +203,10 @@ class TestUserApi2(TestConfig):
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		resultAdmin = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -199,7 +221,11 @@ class TestUserApi2(TestConfig):
 
 		# add user
 
-		userData = {'name':'mustafa', 'phone':'1234567890', 'password':123}
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		userData = {'name':'mustafa', 'phone':'0123456789', 'password':'12334a',\
+					 'status':'active', 'permission':'user', 'country_id':country.id}
 
 		headers = {'token':data['data']['token']}
 		result = self.client_app.post("/api/adduser", data=json.dumps(userData),\
@@ -221,7 +247,10 @@ class TestUserApi2(TestConfig):
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		resultAdmin = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
@@ -236,8 +265,11 @@ class TestUserApi2(TestConfig):
 
 		# add user
 
-		userData = {'name':'mustafa', 'phone':'1234567890', 'password':123,\
-					 'status':'active', 'permission':'user'}
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		userData = {'name':'mustafa', 'phone':'0123456789', 'password':'12334a',\
+					 'status':'active', 'permission':'user', 'country_id':country.id}
 
 		headers = {'token':data['data']['token']}
 		result = self.client_app.post("/api/adduser", data=json.dumps(userData),\

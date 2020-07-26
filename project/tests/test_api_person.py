@@ -1,5 +1,7 @@
 from . import TestConfig
 from app.api_views.person import *
+from app.logic.operation import getCountry
+
 import json
 import os
 
@@ -15,7 +17,10 @@ class TestPersonApi(TestConfig):
 		if not admin_phone or not admin_password:
 			raise ValueError('Environment variables not found!')
 		
-		data = {'phone':admin_phone, 'password':admin_password}
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
 		# post requset
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')

@@ -5,7 +5,10 @@ from ..extensions import jwt
 import datetime
 
 # the logic
-from . import login, getUser, addUser
+from . import login, getUser, addUser, getCountry, validatePassword, validatePhoneNumber
+
+# the shortest length for passwords
+MIN_PASSWORD_LENGTH = 5
 
 @api.route('/login', methods=['POST'])
 def loginUserRoute():
@@ -16,15 +19,34 @@ def loginUserRoute():
 	try:
 		phone = post_data.get('phone')
 		password = post_data.get('password')
+
+		# this used to validate the phone number
+		userCountryID = post_data.get('country_id')
 	except Exception as e:
 
 		result['status'] = status['failure']
 		result['message'] = 'required data not submitted'
 		return make_response(jsonify(result), 400)
 
-	if not phone or not password:
+	
+	if not phone or not password or not userCountryID:
 		result['status'] = status['failure']
 		result['message'] = 'required data not submitted'
+		return make_response(jsonify(result), 400)
+
+	# validate the phone number
+	# ..
+	# first git the country
+	country = getCountry(id=userCountryID)
+	if not country:
+		result['status'] = status['failure']
+		result['message']  = 'wrong country name'
+		return make_response(jsonify(result), 400)
+	# now validate
+	phone = validatePhoneNumber(phone, country.phone_code, country.phone_length)
+	if not phone:
+		result['status'] = status['failure']
+		result['message'] = 'phone number not pass the validation'
 		return make_response(jsonify(result), 400)
 
 	if login(userPhone=phone, userPassword=password):
@@ -66,10 +88,34 @@ def addUserRoute():
 	userPassword = post_data.get('password')
 	userStatus = post_data.get('status')
 	userPermission = post_data.get('permission')
+
+	# this used to validate the phone number
+	userCountryID = post_data.get('country_id')
 	
-	if not userPhone or not userPassword:
+	if not userPhone or not userPassword or not userCountryID:
 		result['status'] = status['failure']
 		result['message'] = 'required data not submitted'
+		return make_response(jsonify(result), 400)
+
+	# validate the password
+	if not validatePassword(userPassword, MIN_PASSWORD_LENGTH):
+		result['status'] = status['failure']
+		result['message'] = 'Password not pass the validation'
+		return make_response(jsonify(result), 400)
+
+	# validate the phone number
+	# ..
+	# first git the country
+	country = getCountry(id=userCountryID)
+	if not country:
+		result['status'] = status['failure']
+		result['message']  = 'wrong country name'
+		return make_response(jsonify(result), 400)
+	# now validate
+	userPhone = validatePhoneNumber(userPhone, country.phone_code, country.phone_length)
+	if not userPhone:
+		result['status'] = status['failure']
+		result['message'] = 'phone number not pass the validation'
 		return make_response(jsonify(result), 400)
 
 	# make sure the user not already exists
