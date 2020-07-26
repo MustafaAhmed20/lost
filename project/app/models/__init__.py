@@ -16,8 +16,8 @@ def defaultData(app, db):
 	app.app_context().push()
 
 	# defult data
-	sudan = Country(name='sudan', phone_code='249')
-	egypt = Country(name='egypt', phone_code='20')
+	sudan = Country(name='sudan', phone_code='249', phone_length=9)
+	egypt = Country(name='egypt', phone_code='20', phone_length=10)
 
 	active = Status_operation(name='active')
 	on_hold = Status_operation(name='on_hold')

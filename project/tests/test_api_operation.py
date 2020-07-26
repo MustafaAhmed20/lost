@@ -32,7 +32,7 @@ class TestOperationApi(TestConfig):
 
 		# add new country
 		headers = {'token':adminToken}
-		data = {'name': 'usa', 'phone_code':1}
+		data = {'name': 'usa', 'phone_code':1, 'phone_length':10}
 
 		result = self.client_app.post("/api/addcountry", data=json.dumps(data),\
 									 headers=headers,content_type='application/json')
@@ -89,7 +89,7 @@ class TestOperationApi(TestConfig):
 		self.assertEqual(result.status_code, 400)
 
 		
-		data = {'name': 'usa'}
+		data = {'name': 'usa', 'phone_length':10}
 
 		result = self.client_app.post("/api/addcountry", data=json.dumps(data),\
 									 headers=headers,content_type='application/json')
@@ -105,7 +105,7 @@ class TestOperationApi(TestConfig):
 
 		# already exists
 		
-		data = {'name': 'sudan', 'phone_code':249}
+		data = {'name': 'sudan', 'phone_code':249, 'phone_length':9}
 
 		result = self.client_app.post("/api/addcountry", data=json.dumps(data),\
 									 headers=headers,content_type='application/json')
@@ -118,7 +118,7 @@ class TestOperationApi(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 202)
 
-		
+
 	def test_getcountry(self):
 		""" test the /getcountry route"""
 
@@ -168,7 +168,7 @@ class TestOperationApi(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 200)
 
-	
+
 	def test_gettypeoperation(self):
 		""" test the /gettypeoperation route"""
 

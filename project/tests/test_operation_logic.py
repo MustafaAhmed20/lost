@@ -14,7 +14,7 @@ class TestOperationLogic(TestConfig):
 	def test_addCountry(self):
 		'''add new Country'''
 
-		result = addCountry(name='usa', phoneCode=1)
+		result = addCountry(name='usa', phoneCode=1, phoneLength=10)
 
 		country = Country.query.filter_by(name='usa').first()
 

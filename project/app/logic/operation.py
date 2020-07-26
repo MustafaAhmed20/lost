@@ -4,10 +4,10 @@ from ..models import db, Operations, Type_operation, Status_operation, Country, 
 from ..models import Person
 
 # Country model
-def addCountry(name, phoneCode):
+def addCountry(name, phoneCode, phoneLength):
 	""" return the country objecct if country added correctly else False """
 	try:
-		country = Country(name=name, phone_code=phoneCode)
+		country = Country(name=name, phone_code=phoneCode, phone_length=phoneLength)
 
 		db.session.add(country)
 		db.session.commit()

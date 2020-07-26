@@ -83,6 +83,9 @@ class Country(db.Model):
 	name = db.Column(db.String(20), nullable=False)
 	phone_code = db.Column(db.Integer, unique=True)
 
+	# the max length of the phone number without the beginning zero
+	phone_length = db.Column(db.Integer, nullable=False)
+
 	operations = db.relationship('Operations', backref='country', lazy='dynamic')
 
 	def toDict(self):
