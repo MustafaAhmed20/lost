@@ -44,3 +44,31 @@ class TestAppLogic(TestConfig):
 		self.assertFalse(validatePhoneNumber(phone4, countryCode, maxPhoneLength), "phone4 did't pass the validation" )
 		self.assertFalse(validatePhoneNumber(phone5, countryCode, maxPhoneLength), "phone5 did't pass the validation" )
 
+	def test_validatePassword(self):
+		''' tests 'validatePassword' func '''
+
+		# valid passwords
+		pass1 = '1234A'
+		pass2 = '12334s'
+		pass3 = '12y34A'
+		pass4 = '1234A%#'
+		pass5 = '1234dGs'
+
+		self.assertTrue(validatePassword(pass1, 5), "password 'pass1' did't pass the validation" )
+		self.assertTrue(validatePassword(pass2, 5), "password 'pass2' did't pass the validation" )
+		self.assertTrue(validatePassword(pass3, 5), "password 'pass3' did't pass the validation" )
+		self.assertTrue(validatePassword(pass4, 5), "password 'pass4' did't pass the validation" )
+		self.assertTrue(validatePassword(pass5, 5), "password 'pass5' did't pass the validation" )
+
+	def test_validatePassword2(self):
+		''' tests 'validatePassword' func with invalid passwords'''
+
+		# valid passwords
+		pass1 = '124A' # short
+		pass2 = '1233423' # no letters
+		pass3 = 'afknjf' # no numbers
+		
+
+		self.assertFalse(validatePassword(pass1, 5), "password 'pass1' pass the validation" )
+		self.assertFalse(validatePassword(pass2, 5), "password 'pass2' pass the validation" )
+		self.assertFalse(validatePassword(pass3, 5), "password 'pass3' pass the validation" )

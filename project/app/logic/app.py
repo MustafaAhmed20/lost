@@ -27,3 +27,25 @@ def validatePhoneNumber(value, countryCode, maxPhoneLength):
 	# return only the actual number
 	return match.group('phone')
 
+def validatePassword(value, minLength):
+	''' validate the password with 
+		return True if passed the validtion else False'''
+
+	if not value:
+		# emptiness not checked here
+		raise ValueError('value must not be empty')
+
+	if len(value) < minLength:
+		return False
+
+	# must contain at least one number
+	pattren1 = r'\d'
+
+	# must contain at least one letter
+	pattren2 = r'[a-zA-Z]'
+
+	if not re.search (pattren1, value) or not re.search (pattren2, value):
+		return False
+
+	return True
+
