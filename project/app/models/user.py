@@ -57,7 +57,7 @@ class UserVerificationNumber(db.Model):
 	''' this model used to save Verification Numbers'''
 
 	__name__ = 'UserVerificationNumber'
-	__tablename__ = 'User_verification_number'
+	__tablename__ = 'user_verification_number'
 
 	id = db.Column(db.Integer, primary_key=True)
 	

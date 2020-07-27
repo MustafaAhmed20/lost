@@ -403,4 +403,110 @@ class TestUserApi3(TestConfig):
 		self.assertEqual(result.status_code, 200)
 
 
+class TestUserApi4(TestConfig):
+	""" tests the forget password and rest password"""
+
+	def test_forgotPassword(self):
+		''' tests the forgotPassword route'''
+
+		# the user country
+		country = getCountry(phoneCode=20)
+		admin_phone = os.getenv('admin_phone')
+
+		data = {'phone':admin_phone, 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/forgotpassword", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# test with not found user
+
+		country = getCountry(phoneCode=249)
+		
+		data = {'phone':'929596047', 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/forgotpassword", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'failure')
+		self.assertEqual(data['message'], 'no user with this phone')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 202)
+
+	def test_resetPassword(self):
+		''' test the 'resetPassword' route '''
+
+		# first requset a code with the admon phone
+
+		# the user country
+		country = getCountry(phoneCode=20)
+		admin_phone = os.getenv('admin_phone')
+
+		data = {'phone':admin_phone, 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/forgotpassword", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# get the code from the database
+
+		code = UserVerificationNumber.query.first()
+
+		# now check with the resetPassword route (withot the new password)
+
+		data = {'phone':admin_phone, 'country_id':country.id, 'code':code.code}
+		# post requset
+		result = self.client_app.post("/api/resetpassword", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		# now check with the resetPassword route (with the new password)
+
+		data = {'phone':admin_phone, 'country_id':country.id, 'code':code.code, 'password':'newpassword123'}
+		
+		# post requset
+		result = self.client_app.post("/api/resetpassword", data=json.dumps(data), content_type='application/json')
+		
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		# now check agin - must failed becouse the code get deleted
+
+		data = {'phone':admin_phone, 'country_id':country.id, 'code':code.code, 'password':'newpassword123'}
+		# post requset
+		result = self.client_app.post("/api/resetpassword", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'failure')
+		self.assertEqual(data['message'], 'Invalid code.')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 202)
 

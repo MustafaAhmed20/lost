@@ -166,7 +166,76 @@ class TestUserLogic2(TestConfig):
 
 		self.assertIn(user, active.users)
 
+	def test_forgotPassword(self):
+		''' tests the 'forgotPassword' func'''
+
+		admin_phone = os.getenv('admin_phone')
+		admin = getUser(phone=os.getenv('admin_phone'))
+
+		result = forgotPassword(admin_phone)
+
+		self.assertTrue(result)
+
+		self.assertEqual(result.user_id, admin.id)
+
+		# try with not found user
+
+		result = forgotPassword('929596047')
+
+		self.assertFalse(result)
+
+	def test_resetPassword(self):
+		''' tests the 'resetPassword' func '''
+
+		# first add a code to admin
+		admin_phone = os.getenv('admin_phone')
+		admin = getUser(phone=os.getenv('admin_phone'))
+
+		resultCode = forgotPassword(admin_phone)
+
+		self.assertTrue(resultCode)
+
+		# now just check if the code is correct
+		result = resetPassword(resultCode.code, admin_phone, newPassword=None)
+
+		self.assertTrue(result)
+
+		# now check and reset the password
+		result = resetPassword(resultCode.code, admin_phone, newPassword='thisnewpassword')
+
+		self.assertTrue(result)
+
+		# try again - must fails becous the code deleted
+		result = resetPassword(resultCode.code, admin_phone, newPassword='thisnewpassword')
+
+		self.assertFalse(result)
 
 
 
+class TestUserHelperFunctions(TestConfig):
 
+	def test_createVerifyCode(self):
+		''' test the create code func'''
+		from app.logic.user import _createVerifyCode
+
+
+		code = _createVerifyCode()
+
+		self.assertTrue(code, 'no code generated')
+		self.assertEqual(len(code), 6, 'the code length is not right')
+
+	def test_restPassword(self):
+		''' tests the rest Password func '''
+		from app.logic.user import _restPassword
+
+		admin = getUser(phone=os.getenv('admin_phone'))
+
+		# change the password
+		result = _restPassword(admin.id, 'thisnewpassword')
+
+		self.assertTrue(result)
+
+		# try login with the new password
+		result = login(os.getenv('admin_phone'), 'thisnewpassword')
+
+		self.assertTrue(result)

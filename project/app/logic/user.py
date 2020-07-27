@@ -4,6 +4,68 @@ from ..extensions import check_password_hash, generate_password_hash, datetime
 import uuid
 import random
 
+# helper fuctions
+def _createVerifyCode():
+	''' create unique 6 digit code number as str''' 
+	while True:
+		# check the random if it is unique or not
+		code = ''.join([str(random.randint(0,9)) for _ in range(6)])
+		object = UserVerificationNumber.query.filter_by(code=code).first()
+		if object:
+			# repete
+			continue
+		break
+	return code
+
+def _checkCode(user_id, code, maxTimeDays=1, deleteCode=False):
+	''' check if the code is exist or not with the user
+		if deleteCode set to True then the code will be deleted in case if success
+		return True if its valid code else False
+		NOTE: the code will be deleted if its expired'''
+
+	# get the Verification details
+	VerifyCode = UserVerificationNumber.query.filter_by(user_id=user_id).first()
+
+	# no code for this user
+	if not VerifyCode:
+		return False
+
+	# check if its to late
+	now = datetime.datetime.now()
+
+	diff = now - VerifyCode.create_date
+
+	if diff.days >= maxTimeDays:
+		# to late
+		# delete the code
+		db.session.delete(VerifyCode)
+		return False
+
+	# check the code
+	if code.replace(' ', '') != VerifyCode.code:
+		return False
+
+	# delete code if deleteCode set to true
+	if deleteCode:
+		# delete the Verify Code
+		db.session.delete(VerifyCode)
+
+	# succes
+	return True
+
+def _restPassword(user_id, newPassword):
+	''' return True is success else False'''
+	# check if the user exist .
+	user = Users.query.get(user_id)
+	if not user:
+		return False
+
+	user.password = generate_password_hash(newPassword)
+	db.session.commit()
+
+	return True
+
+
 # User model
 def login(userPhone, userPassword):
 	""" return True if the phone and the password are correct!"""
@@ -47,6 +109,7 @@ def addUser(name, phone, password, status='active', permission='user'):
 		
 		return False
 
+
 def registerUser(name, phone, password):
 	''' register new User with 'wait activation' Status 
 		return (user, code) if success else false'''
@@ -56,19 +119,13 @@ def registerUser(name, phone, password):
 	if result:
 		# add Verification Number to the user
 
-		while True:
-			# check the random if it is unique or not
-			number = ''.join([str(random.randint(0,9)) for _ in range(6)])
-			object = UserVerificationNumber.query.filter_by(code=number).first()
-			if object:
-				# repete
-				continue
-			code = UserVerificationNumber(code=number, user_id=result.id)
+		number = _createVerifyCode()
 
-			# save the code
-			db.session.add(code)
-			db.session.commit()
-			break
+		code = UserVerificationNumber(code=number, user_id=result.id)
+
+		# save the code
+		db.session.add(code)
+		db.session.commit()
 
 		return result, code
 
@@ -93,34 +150,55 @@ def VerifyUser(code, user_id=None, userPublicId=None, maxTimeDays=1):
 	if not user:
 		return False		
 
-	# get the Verification details
-	VerifyCode = UserVerificationNumber.query.filter_by(user_id=user.id).first()
+	valid = _checkCode(user.id, code, maxTimeDays=maxTimeDays, deleteCode=False)
 
-	# no code for this user
-	if not VerifyCode:
+	if not valid:
 		return False
 
-	# check if its to late
-	now = datetime.datetime.now()
+	# make the user active
+	changeUserStatus(user.public_id, 'active')
+	return True
 
-	diff = now - VerifyCode.create_date
+def forgotPassword(phone):
+	''' check if there is a user with this phone then create code to him
+		return 'UserVerificationNumber' object '''
 
-	if diff.days >= maxTimeDays:
-		# to late
-		# delete the code
-		db.session.delete(VerifyCode)
+	# check if the user exist .
+	user = Users.query.filter_by(phone=phone).first()
+	if not user:
+		return False
+
+	code = _createVerifyCode()
+
+	# save the code with this user
+	userCode = UserVerificationNumber(code=code, user_id=user.id)
+
+	# save the code
+	db.session.add(userCode)
+	db.session.commit()
+
+	return userCode
+
+def resetPassword(code, phone, newPassword=None):
+	''' check if the code is valid or not, if newPassword given it will be reset'''
+	# first get the user
+	user = Users.query.filter_by(phone=phone).first()
+	if not user:
 		return False
 
 	# check the code
-
-	if code.replace(' ', '') != VerifyCode.code:
+	if not _checkCode(user.id, code, deleteCode=bool(newPassword)):
+		# if code not valid
 		return False
 
-	# delete the Verify Code
-	db.session.delete(VerifyCode)
+	# if the new password passed
+	if newPassword:
+		_restPassword(user.id, newPassword)
 
-	# make the user active
-	return changeUserStatus(user.public_id, 'active')
+	# succes
+	return True
+
+
 
 def changeUserPermission(userPublicId, toPermission):
 	"""change the User Permission"""
@@ -139,7 +217,7 @@ def changeUserPermission(userPublicId, toPermission):
 	return False
 
 def changeUserStatus(userPublicId, toStatus):
-	"""change the User Permission"""
+	"""change the User Status"""
 
 	# check if the user exist .
 	user = Users.query.filter_by(public_id=userPublicId).first()
@@ -167,6 +245,7 @@ def getUser(id=None, publicId =None, phone=None):
 
 	if phone:
 		return Users.query.filter_by(phone=phone).first()		
+
 
 # Status model
 def addStatus(name):
