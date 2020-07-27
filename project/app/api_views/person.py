@@ -1,5 +1,5 @@
 from . import api, current_app, jsonify, request, make_response, json
-from . import status, baseApi
+from . import status, baseApi, copy
 from . import adminRequired
 
 # the logic
@@ -11,7 +11,7 @@ def addAgetRoute():
 	""" add new age range """
 	
 	# the retuned response
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# get the post data
 	post_data = request.get_json()
@@ -43,7 +43,7 @@ def addAgetRoute():
 def getAgeRoute():
 	""" Return a list of ages"""
 
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# all ages
 	age = getAge()

@@ -1,5 +1,5 @@
 from . import api, current_app, jsonify, request, make_response, json
-from . import status, baseApi, jwt
+from . import status, baseApi, jwt, copy
 from . import adminRequired, loginRequired, saveFile, MAX_IMEGES_NUMBER
 
 # the logic
@@ -12,7 +12,7 @@ import datetime
 @adminRequired
 def addCountryRoute():
 	# the returned response
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# get the post data
 	post_data = request.get_json()
@@ -48,7 +48,7 @@ def addCountryRoute():
 def getCountryRoute(country_id=None):
 	""" Return a list of Countries or single Country with id"""
 
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	if country_id:
 		try:
@@ -85,7 +85,7 @@ def getCountryRoute(country_id=None):
 def getStatusOperationRoute(status_id=None):
 	""" Return a list of Countries or single Country with id"""
 
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	if status_id:
 		try:
@@ -123,7 +123,7 @@ def getStatusOperationRoute(status_id=None):
 def getTypeOperationRoute(type_id=None):
 	""" Return a list of Countries or single Country with id"""
 
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	if type_id:
 		try:
@@ -188,7 +188,7 @@ def addOperationRoute():
 	""" add new operation"""
 
 	# the returned response
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# get the post data
 	post_data = request.form
@@ -319,7 +319,7 @@ def addOperationRoute():
 @api.route('/getoperation', methods=['GET'])
 def getOperationRoute():
 	""" get a list of operations"""
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 	#filters = request.view_args
 	filters = request.args
 	if not filters:

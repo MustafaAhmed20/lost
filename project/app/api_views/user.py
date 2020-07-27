@@ -1,5 +1,5 @@
 from . import api, current_app, jsonify, request, make_response, json
-from . import days, minutes, status, baseApi
+from . import days, minutes, status, baseApi, copy
 from . import adminRequired, loginRequired
 from ..extensions import jwt
 import datetime
@@ -12,7 +12,7 @@ MIN_PASSWORD_LENGTH = 5
 
 @api.route('/login', methods=['POST'])
 def loginUserRoute():
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# get the post data
 	post_data = request.get_json()
@@ -78,7 +78,7 @@ def logoutUserRoute():
 @adminRequired
 def addUserRoute():
 	# the retuned response
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# get the post data
 	post_data = request.get_json()
@@ -148,7 +148,7 @@ def registerUserRoute():
 	""" register user with sms Verification"""
 
 	# the retuned response
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# get the post data
 	post_data = request.get_json()
@@ -227,7 +227,7 @@ def conformUserPhoneRoute():
 	''' conform the user phone with code sended to him'''
 
 	# the retuned response
-	result = baseApi.copy()
+	result = copy.deepcopy(baseApi)
 
 	# get the post data
 	post_data = request.get_json()

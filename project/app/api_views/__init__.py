@@ -5,6 +5,7 @@ import json, os
 import datetime 
 from functools import wraps
 from ..extensions import secure_filename
+import copy
 
 
 # import the logic
@@ -31,7 +32,7 @@ def adminRequired(f):
 		
 		# get the tkoken
 		token = request.headers.get('token')
-		result = baseApi.copy()
+		result = copy.deepcopy(baseApi)
 		
 		if not token:
 			result['status'] = status['failure']
@@ -72,7 +73,7 @@ def loginRequired(f):
 	def mustlogin(*args, **kwargs):
 		# get the tkoken
 		token = request.headers.get('token')
-		result = baseApi.copy()
+		result = copy.deepcopy(baseApi)
 		
 		if not token:
 			result['status'] = status['failure']
