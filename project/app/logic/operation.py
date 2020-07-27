@@ -88,7 +88,7 @@ def getType_operation(id=None, name=None):
 	return None
 
 # Operations model
-def addOperation(country, object, userPublicId, date, type=None, status=None, lat=None, lng=None):
+def addOperation(country, object, userPublicId, date, type=None, status=None, lat=None, lng=None, details=None):
 	
 	""" return the new Operation object added correctly else False.
 		perm: country 		= the Country object 
@@ -99,7 +99,8 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 		perm: type			= the Type_operation object 
 		perm: status_id 	= the  Status_operation object
 		perm: lat 			= the lat of this Operation
-		perm: lng 			= the lng of this Operation"""
+		perm: lng 			= the lng of this Operation
+		perm: details 		= the details of this Operation"""
 	
 	try:
 		operation = Operations(object = object, date = date)
@@ -107,6 +108,8 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 			operation.lat = float(lat)
 		if lng:
 			operation.lng = float(lng)
+		if details:
+			operation.details = details
 
 		if not type:
 			type = getType_operation(name='lost')

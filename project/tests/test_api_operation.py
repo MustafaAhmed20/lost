@@ -267,7 +267,7 @@ class TestOperationApi2(TestConfig):
 		self.assertTrue(photos)
 		self.assertEqual(len(photos), 3)
 
-	def test_getoperation(self):
+	def test_getoperation2(self):
 		""" add operations then get it """
 
 		# first log-in 
@@ -361,6 +361,73 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(len(data['data']['operations']), 1)
 		self.assertEqual(data['message'],  None)
 		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+	def test_addoperation3(self):
+		''' add operation with full data then get it '''
+
+		# first log-in 
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+	
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 200)
+
+		token = data['data']['token']
+
+
+		# add new operation
+		headers = {'token':token}
+
+		lat = 48.856613
+		lng = 2.352222
+
+		from app.models import Age
+		age = Age.query.first()
+
+		data = {'date':'2020-11-15',
+				'type_id':1, 'country_id':'1',
+				'object_type':'Person', 'person_name':'mustafa', 'age_id':age.id,
+				'details': 'this long paragraph of details',
+				'lat':lat, 'lng':lng}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 201)
+
+
+		# get the operation
+		data = {}
+
+		result=self.client_app.get('/api/getoperation', query_string=data, content_type='application/json')
+		data = json.loads(result.data.decode())
+
+
+		self.assertTrue(data['data']['operations'])
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+
+		self.assertEqual(data['data']['operations'][0]['details'], 'this long paragraph of details', 'no details')
+		self.assertEqual(data['data']['operations'][0]['lat'], lat,'no details')
+		self.assertEqual(data['data']['operations'][0]['lng'], lng,'no details')
+
+		
 		self.assertEqual(result.content_type, 'application/json')
 		self.assertEqual(result.status_code, 200)
 

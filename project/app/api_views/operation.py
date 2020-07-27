@@ -230,7 +230,7 @@ def addOperationRoute():
 		dateObject = datetime.datetime.strptime(date, '%Y-%m-%d')
 	except Exception as e:
 		result['status'] = status['failure']
-		result['message']  = 'wrong date format. date must be in %Y-%m-%d fomat'
+		result['message']  = r'wrong date format. date must be in %Y-%m-%d fomat'
 		return make_response(jsonify(result), 400)
 
 	type_id = post_data.get('type_id')
@@ -286,8 +286,12 @@ def addOperationRoute():
 		result['message'] = 'lat and lng must be float numbers'
 		return make_response(jsonify(result), 400)
 
+	# get the details
+	details = post_data.get('details')
+
+
 	operation = addOperation(country=country, object=object, userPublicId=userPublicId,\
-	 			date=dateObject, type=type, status=s, lat=lat, lng=lng)
+	 			date=dateObject, type=type, status=s, lat=lat, lng=lng, details=details)
 
 
 	if not operation:

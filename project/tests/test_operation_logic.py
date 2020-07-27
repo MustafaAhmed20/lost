@@ -2,7 +2,7 @@
 from . import TestConfig
 from app.logic.operation import *
 from app.logic.user import Users
-from app.logic.person import Person, addPerson
+from app.logic.person import Person, addPerson, getAge
 
 
 
@@ -42,7 +42,7 @@ class TestOperationLogic(TestConfig):
 		self.assertEqual(result.name, 'test', 'add new Type operation Failed')
 
 	def test_addOperation(self):
-		'''add new Type operation'''
+		'''add new operation'''
 
 		# the user who make this operation
 		userPublicId = Users.query.filter_by(name='admin').first().public_id
@@ -77,7 +77,7 @@ class TestOperationLogic(TestConfig):
 		self.assertEqual(operation.object_id, person.id, 	"operation don't have the right object")
 
 	def test_addOperation2(self):
-		'''add new Type operation'''
+		'''add new operation'''
 
 		lat = 48.856613
 		lng = 2.352222
@@ -115,6 +115,40 @@ class TestOperationLogic(TestConfig):
 		self.assertEqual(operation.object_id, person.id, 	"operation don't have the right object")
 		self.assertEqual(float(operation.lat), lat, 	"operation don't have the right lat")
 		self.assertEqual(float(operation.lng), lng, 	"operation don't have the right lng")
+
+	def test_addOperation3(self):
+		''' tests add Operation with full data'''
+
+		lat = 48.856613
+		lng = 2.352222
+
+		# the user who make this operation
+		userPublicId = Users.query.filter_by(name='admin').first().public_id
+
+		# the object this operation point to
+		age = getAge()
+		addPerson(name='mustafa', ageId=age[0].id)
+		person = Person.query.first()
+		
+		type = Type_operation.query.filter_by(name='lost').first()
+		status = Status_operation.query.filter_by(name='active').first()
+		country = Country.query.first()
+
+		# this long details string
+		details = 'this long details string about the person'
+
+		result = addOperation(type=type, status=status, country=country, object=person,\
+							 userPublicId= userPublicId, date=datetime.datetime.now(), lat=lat, lng=lng,
+							 details=details)
+
+		operation = Operations.query.first()
+
+
+		self.assertTrue(operation)
+		self.assertEqual(operation.details, details, 'not the same details')
+		self.assertEqual(float(operation.lat), lat, 'not the same lat')
+		self.assertEqual(float(operation.lng), lng, 'not the same lng')
+		self.assertEqual(operation.object.name, person.name, 'not the same person name')
 
 class TestOperationLogic2(TestConfig):
 	""" tests the Operation model operations """

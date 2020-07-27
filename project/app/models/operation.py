@@ -20,6 +20,9 @@ class Operations(db.Model):
 	lat = db.Column(db.DECIMAL(precision=12, scale=8)) 
 	lng = db.Column(db.DECIMAL(precision=12, scale=8))
 
+	# the details of the operation
+	details = db.Column(db.TEXT)
+
 	# This is used to discriminate between the linked tables.
 	object_type = db.Column(db.Unicode(255))
 
@@ -40,12 +43,13 @@ class Operations(db.Model):
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.id, 'date':self.date.strftime ('%Y-%m-%d'),\
-				'object_type':self.object.__name__, 'object':self.object.toDict(),\
-				'country_id':self.country_id,\
-				'type_id':self.type_id, 'status_id':self.status_id,\
-				'lat':float(self.lat) if self.lat else None,\
-				'lng':float(self.lng) if self.lng else None}
+		return {'id':self.id, 'date':self.date.strftime ('%Y-%m-%d'),
+				'object_type':self.object.__name__, 'object':self.object.toDict(),
+				'country_id':self.country_id,
+				'type_id':self.type_id, 'status_id':self.status_id,
+				'lat':float(self.lat) if self.lat else None,
+				'lng':float(self.lng) if self.lng else None,
+				'details': self.details}
 
 class Type_operation(db.Model):
 	"""Define the type of the operation. (lost - found)"""
