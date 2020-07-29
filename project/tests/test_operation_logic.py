@@ -14,7 +14,7 @@ class TestOperationLogic(TestConfig):
 	def test_addCountry(self):
 		'''add new Country'''
 
-		result = addCountry(name='usa', phoneCode=1, phoneLength=10)
+		result = addCountry(name='usa', phoneCode=1, phoneLength=10, isoName='USA')
 
 		country = Country.query.filter_by(name='usa').first()
 
@@ -175,6 +175,11 @@ class TestOperationLogic2(TestConfig):
 
 		self.assertEqual(result.phone_code, 249)
 		self.assertTrue(result, 'no Country with id=1')
+
+		result = getCountry(isoName='EG')
+
+		self.assertEqual(result.iso_name, 'EG')
+		self.assertTrue(result, 'no Country with iso_name=EG')
 
 	def test_getStatus_operation(self):
 		""" get the Countries"""

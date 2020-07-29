@@ -84,14 +84,19 @@ class Country(db.Model):
 	__name__ = 'Country'
 	__tablename__ = 'country'
 	id = db.Column(db.Integer, primary_key=True)
-	name = db.Column(db.String(20), nullable=False)
+	name = db.Column(db.String(20), nullable=False, unique=True)
 	phone_code = db.Column(db.Integer, unique=True)
 
 	# the max length of the phone number without the beginning zero
 	phone_length = db.Column(db.Integer, nullable=False)
 
+	# the iso name for the country. ex(EG)
+	iso_name = db.Column(db.String(4), nullable=False, unique=True)
+
 	operations = db.relationship('Operations', backref='country', lazy='dynamic')
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.id, 'name':self.name, 'phone_code':self.phone_code}
+		return {'id':self.id, 'name':self.name, 
+				'phone_code':self.phone_code, 'phone_length':self.phone_length,
+				'iso_name':self.iso_name}

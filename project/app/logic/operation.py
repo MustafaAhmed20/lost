@@ -4,10 +4,10 @@ from ..models import db, Operations, Type_operation, Status_operation, Country, 
 from ..models import Person
 
 # Country model
-def addCountry(name, phoneCode, phoneLength):
+def addCountry(name, phoneCode, phoneLength, isoName):
 	""" return the country objecct if country added correctly else False """
 	try:
-		country = Country(name=name, phone_code=phoneCode, phone_length=phoneLength)
+		country = Country(name=name, phone_code=phoneCode, phone_length=phoneLength, iso_name=isoName)
 
 		db.session.add(country)
 		db.session.commit()
@@ -17,11 +17,11 @@ def addCountry(name, phoneCode, phoneLength):
 
 	return country
 
-def getCountry(id=None, name=None, phoneCode=None):
+def getCountry(id=None, name=None, phoneCode=None, isoName=None):
 	""" return the country object or None if not exist
 		return a list of all countries if no perm passed"""
 
-	if not any([id, name, phoneCode]):
+	if not any([id, name, phoneCode, isoName]):
 		return Country.query.all()
 	if id :
 		return Country.query.get(id)
@@ -29,6 +29,8 @@ def getCountry(id=None, name=None, phoneCode=None):
 		return Country.query.filter_by(name=name).first()
 	if phoneCode:
 		return Country.query.filter_by(phone_code=phoneCode).first()
+	if isoName:
+		return Country.query.filter_by(iso_name=isoName).first()
 
 	return None
 

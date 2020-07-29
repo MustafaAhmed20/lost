@@ -20,9 +20,10 @@ def addCountryRoute():
 	countryName = post_data.get('name')
 	countryPhoneCode = post_data.get('phone_code')
 	countryPhoneLength = post_data.get('phone_length')
+	countryIsoName = post_data.get('iso_name')
 	
-	
-	if not countryName or not countryPhoneCode or not countryPhoneLength:
+	# required data
+	if not all([ countryName, countryPhoneCode, countryPhoneLength, countryIsoName]) :
 		result['status'] = status['failure']
 		result['message'] = 'required data not submitted'
 		return make_response(jsonify(result), 400)
@@ -33,7 +34,8 @@ def addCountryRoute():
 		result['message'] = 'Country already exists.'
 		return make_response(jsonify(result), 202)
 
-	if not addCountry(name=countryName, phoneCode=countryPhoneCode, phoneLength=countryPhoneLength):
+	if not addCountry(name=countryName, phoneCode=countryPhoneCode, 
+					phoneLength=countryPhoneLength, isoName=countryIsoName):
 		result['status'] = status['failure']
 		result['message'] = 'Some error occurred. Please try again'
 		return make_response(jsonify(result), 401)

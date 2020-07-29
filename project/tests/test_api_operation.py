@@ -36,7 +36,7 @@ class TestOperationApi(TestConfig):
 
 		# add new country
 		headers = {'token':adminToken}
-		data = {'name': 'usa', 'phone_code':1, 'phone_length':10}
+		data = {'name': 'usa', 'phone_code':1, 'phone_length':10, 'iso_name':'USA'}
 
 		result = self.client_app.post("/api/addcountry", data=json.dumps(data),\
 									 headers=headers,content_type='application/json')
@@ -54,6 +54,7 @@ class TestOperationApi(TestConfig):
 		self.assertTrue(country, 'no country')
 		self.assertEqual(country.name, 'usa', 'no country')
 		self.assertEqual(country.phone_code, 1, 'no country')
+		self.assertEqual(country.iso_name, 'USA', 'no country')
 
 	def test_addcountry2(self):
 		""" try add country without valid data"""
@@ -112,7 +113,7 @@ class TestOperationApi(TestConfig):
 
 		# already exists
 		
-		data = {'name': 'sudan', 'phone_code':249, 'phone_length':9}
+		data = {'name': 'sudan', 'phone_code':249, 'phone_length':9, 'iso_name':'SD'}
 
 		result = self.client_app.post("/api/addcountry", data=json.dumps(data),\
 									 headers=headers,content_type='application/json')
