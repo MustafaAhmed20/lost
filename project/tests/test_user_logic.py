@@ -1,7 +1,7 @@
 """ tests the logic/user.py"""
 from . import TestConfig
 from app.logic.user import *
-from app.models import Status
+from app.models import Status, UserVerificationNumber
 
 import os
 
@@ -184,6 +184,18 @@ class TestUserLogic2(TestConfig):
 
 		self.assertFalse(result)
 
+		# try add a new code to same user - should delete the first automatically
+
+		result = forgotPassword(admin_phone)
+
+		self.assertTrue(result)
+		self.assertEqual(result.user_id, admin.id)
+
+		# one code
+		codes = UserVerificationNumber.query.all()
+
+		self.assertEqual(len(codes), 1)
+
 	def test_resetPassword(self):
 		''' tests the 'resetPassword' func '''
 
@@ -209,8 +221,6 @@ class TestUserLogic2(TestConfig):
 		result = resetPassword(resultCode.code, admin_phone, newPassword='thisnewpassword')
 
 		self.assertFalse(result)
-
-
 
 class TestUserHelperFunctions(TestConfig):
 
@@ -239,3 +249,26 @@ class TestUserHelperFunctions(TestConfig):
 		result = login(os.getenv('admin_phone'), 'thisnewpassword')
 
 		self.assertTrue(result)
+
+	def test_deleteUserCode(self):
+		''' delete the code for admin'''
+		from app.logic.user import _deleteUserCode
+
+		admin_phone = os.getenv('admin_phone')
+		admin = getUser(phone=os.getenv('admin_phone'))
+
+		# first create code for admin
+		result = forgotPassword(admin_phone)
+
+		self.assertTrue(result)
+
+		# now dlete the code
+		result = _deleteUserCode(admin.id)
+
+		self.assertTrue(result)
+
+		# now check if it deleted
+		codes = UserVerificationNumber.query.all()
+		self.assertFalse(codes)
+
+

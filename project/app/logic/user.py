@@ -65,6 +65,17 @@ def _restPassword(user_id, newPassword):
 
 	return True
 
+def _deleteUserCode(user_id):
+	# delete all codes for this user
+
+	# delete the Verification details
+	VerifyCode = UserVerificationNumber.query.filter_by(user_id=user_id).delete()
+
+	db.session.commit()
+
+	return True
+
+
 
 # User model
 def login(userPhone, userPassword):
@@ -167,6 +178,9 @@ def forgotPassword(phone):
 	user = Users.query.filter_by(phone=phone).first()
 	if not user:
 		return False
+
+	# delete old codes for this user
+	_deleteUserCode(user_id=user.id)
 
 	code = _createVerifyCode()
 
