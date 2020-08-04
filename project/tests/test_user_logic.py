@@ -166,6 +166,36 @@ class TestUserLogic2(TestConfig):
 
 		self.assertIn(user, active.users)
 
+	def test_registerUser3(self):
+		''' register a User(without name)then confirm the number '''
+
+		# first register the user
+		result = registerUser(phone=12345678, password=123)
+
+		# success register
+		self.assertTrue(result)
+
+		user, code = result
+
+		self.assertEqual(user.phone, '12345678', 'get user Failed')
+		self.assertEqual(code.user_id, user.id, 'create code Failed')
+
+		# valid code
+		self.assertTrue(code.code)
+		self.assertEqual(len(code.code), 6, 'create code length Failed')
+
+		# Verify the user
+
+		result = VerifyUser(user_id=user.id, code=code.code)
+
+		# success Verification
+		self.assertTrue(result)
+
+		# make sure the user is active now
+		active = Status.query.filter_by(name='active').first()
+
+		self.assertIn(user, active.users)
+
 	def test_forgotPassword(self):
 		''' tests the 'forgotPassword' func'''
 

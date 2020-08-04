@@ -5,7 +5,7 @@ import json
 import os
 
 # 'UserVerificationNumber' model
-from app.models import UserVerificationNumber
+from app.models import UserVerificationNumber, Users
 
 class TestUserApi(TestConfig):
 	""" tests the user section of the api """
@@ -196,7 +196,7 @@ class TestUserApi2(TestConfig):
 		self.assertEqual(testData['message'], "You don't have the permission.")
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 401)
-	
+
 	def test_addUser3(self):
 		""" login with admin then add user withot the defulat values"""
 
@@ -297,6 +297,97 @@ class TestUserApi2(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 202)
 
+	def test_update(self):
+		# update the user data
+
+		# first log-in with admin
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+		
+		if not admin_phone or not admin_password:
+			raise ValueError('Environment variables not found!')
+		
+		# the user country
+		country = getCountry(phoneCode=20)
+
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# update the admin data - just the name
+		token = data['data']['token']
+		headers = {"token":token}
+
+		data = {'name':"new name"}
+		
+		# put requset
+		result = self.client_app.put("/api/modifyuser", data=json.dumps(data), headers=headers ,content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# check the new name in the database
+		user = Users.query.filter_by(name='new name').first()
+
+		self.assertTrue(user, "update admin name failed")
+		self.assertEqual(user.phone, admin_phone, "admin phone don't match")
+
+	def test_update2(self):
+		# update the user data - update the password
+
+		# first log-in with admin
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+		
+		if not admin_phone or not admin_password:
+			raise ValueError('Environment variables not found!')
+		
+		# the user country
+		country = getCountry(phoneCode=20)
+
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# update the admin data 
+		token = data['data']['token']
+		headers = {"token":token}
+
+		data = {"password":admin_password, "newpassword": "newpassword123"}
+		
+		# put requset
+		result = self.client_app.put("/api/modifyuser", data=json.dumps(data), headers=headers ,content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# check the new name in the database
+		user = Users.query.filter_by(phone=admin_phone).first()
+
+		self.assertTrue(user, "update admin name failed")
+		self.assertEqual(user.phone, admin_phone, "admin phone don't match")
+
+		
 class TestUserApi3(TestConfig):
 	""" tests the register user and confirm number"""
 
@@ -325,6 +416,30 @@ class TestUserApi3(TestConfig):
 		self.assertTrue(code, 'no Verification Number')
 
 	def test_registerUser2(self):
+		''' regster user withot name'''
+
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		data = {'phone':'+249929596047', 'password':'19823h', 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/registeruser", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 201)
+
+		# get sure the code get added to database
+		code = UserVerificationNumber.query.first()
+
+		self.assertTrue(code, 'no Verification Number')
+
+	def test_registerUser3(self):
 		''' regster user - invalid phone number'''
 
 		# the user country
@@ -343,7 +458,7 @@ class TestUserApi3(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 400)
 
-	def test_registerUser3(self):
+	def test_registerUser4(self):
 		''' regster user - invalid password'''
 
 		# the user country
@@ -362,7 +477,7 @@ class TestUserApi3(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 400)
 
-	def test_registerUser4(self):
+	def test_registerUser5(self):
 		''' register User then conform it '''
 
 		# the user country

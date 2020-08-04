@@ -1,6 +1,6 @@
 from . import api, current_app, jsonify, request, make_response, json
 from . import status, baseApi, jwt, copy
-from . import adminRequired, loginRequired, saveFile, MAX_IMEGES_NUMBER
+from . import adminRequired, loginRequired, loginActiveRequired, saveFile, MAX_IMEGES_NUMBER
 
 # the logic
 from . import addOperation, addCountry, getCountry, getStatus_operation, getType_operation, getOperation
@@ -185,7 +185,7 @@ object_types_add = {'Person':addObjectPerson}
 object_types_delete = {'Person':deleteObjectPerson}
 
 @api.route('/addoperation', methods=['POST'])
-@loginRequired
+@loginActiveRequired
 def addOperationRoute():
 	""" add new operation"""
 

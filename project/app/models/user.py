@@ -7,7 +7,7 @@ class Users(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 	public_id = db.Column(db.String(50), unique=True)
 	
-	name = db.Column(db.String(80), nullable=False)
+	name = db.Column(db.String(80))
 	password = db.Column(db.TEXT, nullable=False)
 	
 	phone = db.Column(db.String(12), nullable=False, unique=True)

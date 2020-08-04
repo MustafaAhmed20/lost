@@ -6,7 +6,7 @@ import datetime
 
 # the logic
 from . import (login, getUser, addUser, getCountry, validatePassword, validatePhoneNumber, 
-				registerUser, VerifyUser, forgotPassword, resetPassword)
+				registerUser, VerifyUser, forgotPassword, resetPassword, updateUserData)
 
 # the shortest length for passwords
 MIN_PASSWORD_LENGTH = 5
@@ -78,7 +78,7 @@ def logoutUserRoute():
 @api.route('/adduser', methods=['POST'])
 @adminRequired
 def addUserRoute():
-	# the retuned response
+	# the returned response
 	result = copy.deepcopy(baseApi)
 
 	# get the post data
@@ -139,6 +139,65 @@ def addUserRoute():
 def deleteUserRoute():
 	pass
 
+@api.route('/modifyuser', methods=['PUT'])
+@loginRequired
+def modifyUserRoute():
+	# modify the user data with the user him self logged-in
+
+	# the returned response
+	result = copy.deepcopy(baseApi)
+
+	# get the post data
+	post_data = request.get_json()
+
+	userName = post_data.get('name')
+
+	# if the user want change the password - must sumbit the old password
+	userPassword = post_data.get('password')
+	userNewPassword = post_data.get('newpassword')
+
+	if userNewPassword:
+		# submit the old password
+		if not userPassword:
+			result['status'] = status['failure']
+			result['message'] = 'required data not submitted'
+			return make_response(jsonify(result), 400)
+
+		# validate the old/new passwords
+		if not validatePassword(userPassword, MIN_PASSWORD_LENGTH) or not validatePassword(userNewPassword, MIN_PASSWORD_LENGTH):
+			result['status'] = status['failure']
+			result['message'] = 'Password not pass the validation'
+			return make_response(jsonify(result), 400)
+
+
+	# get the user
+	token = request.headers.get('token')
+	try:
+		payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
+		userPublicId = payload['user']
+	except jwt.ExpiredSignatureError :
+		result['status'] = status['failure']
+		result['message']  = 'Signature expired. Please log in again.'
+		return make_response(jsonify(result), 202)
+	except jwt.InvalidTokenError:
+		result['status'] = status['failure']
+		result['message']  ='Invalid token. Please log in again.'
+		return make_response(jsonify(result), 202)
+
+	user = getUser(publicId=userPublicId)
+
+	# update the data
+	updateResult = updateUserData(user=user, name=userName, newPassword=userNewPassword, password=userPassword)
+
+	if not updateResult:
+		result['status'] = status['failure']
+		result['message']  = 'update data Failed'
+		return make_response(jsonify(result), 202)
+
+	# success
+	result['status'] = status['success']
+	return make_response(jsonify(result), 200)
+
 @api.route('/changeuserpermission', methods=['DELETE'])
 @adminRequired
 def changeUserPermissionRoute():
@@ -148,7 +207,7 @@ def changeUserPermissionRoute():
 def registerUserRoute():
 	""" register user with sms Verification"""
 
-	# the retuned response
+	# the returned response
 	result = copy.deepcopy(baseApi)
 
 	# get the post data
@@ -161,7 +220,7 @@ def registerUserRoute():
 	# this used to validate the phone number
 	userCountryID = post_data.get('country_id')
 	
-	if not userPhone or not userPassword or not userCountryID or not userName:
+	if not userPhone or not userPassword or not userCountryID :
 		result['status'] = status['failure']
 		result['message'] = 'required data not submitted'
 		return make_response(jsonify(result), 400)
@@ -194,7 +253,7 @@ def registerUserRoute():
 		return make_response(jsonify(result), 202)
 
 	# user, code
-	userAndCode = registerUser(name=userName, phone=userPhone, password=userPassword)
+	userAndCode = registerUser(phone=userPhone, password=userPassword, name=userName)
 
 	if not userAndCode:
 		result['status'] = status['failure']
@@ -225,7 +284,7 @@ def registerUserRoute():
 def conformUserPhoneRoute():
 	''' conform the user phone with code sended to him'''
 
-	# the retuned response
+	# the returned response
 	result = copy.deepcopy(baseApi)
 
 	# get the post data
@@ -268,7 +327,7 @@ def conformUserPhoneRoute():
 def forgotPasswordRoute():
 	""" send sms Verification code to user"""
 
-	# the retuned response
+	# the returned response
 	result = copy.deepcopy(baseApi)
 
 	# get the post data
@@ -320,7 +379,7 @@ def forgotPasswordRoute():
 def resetPasswordRoute():
 	''' rest the password for a user if submitted valid Verification code '''
 
-	# the retuned response
+	# the returned response
 	result = copy.deepcopy(baseApi)
 
 	# get the post data

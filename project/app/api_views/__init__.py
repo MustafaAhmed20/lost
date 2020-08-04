@@ -99,6 +99,50 @@ def loginRequired(f):
 
 	return mustlogin
 
+def loginActiveRequired(f):
+	""" the user must be with Active status """
+	@wraps(f)
+	def mustlogin(*args, **kwargs):
+		# get the tkoken
+		token = request.headers.get('token')
+		result = copy.deepcopy(baseApi)
+		
+		if not token:
+			result['status'] = status['failure']
+			result['message'] = 'token required!'
+			make_response(jsonify(result), 400)
+
+		try:
+			payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
+			userPublicId = payload['user']
+		except jwt.ExpiredSignatureError :
+			result['status'] = status['failure']
+			result['message']  = 'Signature expired. Please log in again.'
+			return make_response(jsonify(result), 202)
+		except jwt.InvalidTokenError:
+			result['status'] = status['failure']
+			result['message']  ='Invalid token. Please log in again.'
+			return make_response(jsonify(result), 202)
+
+		user = getUser(publicId = userPublicId)
+		status = getStatus(name='active')
+
+		if status:
+			if user.id != status.id:
+				result['status'] = status['failure']
+				result['message']  ='This user not active.'
+				return make_response(jsonify(result), 202)
+		else:
+			result['status'] = status['failure']
+			result['message']  ='Some error occurred. Please try again'
+			return make_response(jsonify(result), 401)
+
+
+		# success
+		return f(*args, **kwargs)
+
+	return mustlogin
+
 def saveFile(file):
 	''' take file and save it, return link to the photo'''
 	filename = file.filename

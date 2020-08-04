@@ -121,7 +121,33 @@ def addUser(name, phone, password, status='active', permission='user'):
 		return False
 
 
-def registerUser(name, phone, password):
+def updateUserData(user, name=None, newPassword=None, password=None):
+	'''the user update his data, phone not changable
+		return True if success else False
+		perm user: the user object'''
+	if not any([name, newPassword, password]):
+		# no data passed
+		return False
+
+	if newPassword:
+		if not password:
+			return False
+		# check the old password
+		if not check_password_hash(user.password, str(password)):
+			return False
+		# change the password
+		user.password = generate_password_hash(str(newPassword))
+		if name:
+			user.name = name
+		db.session.commit()
+		return True
+
+	# no password - just name
+	user.name = name
+	db.session.commit()
+	return True
+
+def registerUser(phone, password, name=None):
 	''' register new User with 'wait activation' Status 
 		return (user, code) if success else false'''
 
@@ -275,6 +301,15 @@ def addStatus(name):
 	
 
 	return status
+
+def getStatus(name=None):
+	""" return the Status object or None if not exist
+		return all if not name passed."""
+	
+	if not name:
+		return Status.query.all()
+
+	return Status.query.filter_by(name=name).first()
 
 # Permission model
 def addPermission(name):
