@@ -75,6 +75,17 @@ def _deleteUserCode(user_id):
 
 	return True
 
+def _createPublicId():
+	''' return unique public id for users'''
+
+	while True:
+		code = str(uuid.uuid4())
+		user = Users.query.filter_by(public_id=code).first()
+		if user:
+			# repete
+			continue
+		# unique
+		return code
 
 
 # User model
@@ -96,7 +107,7 @@ def addUser(name, phone, password, status='active', permission='user'):
 	""" return The new user object if user added correctly else False """
 	try:
 		user = Users(name=name, password=generate_password_hash(str(password)),
-				public_id=uuid.uuid4, phone=phone)
+				public_id=_createPublicId(), phone=phone)
 
 		status_user = Status.query.filter_by(name=status).first()
 		permission_user = Permission.query.filter_by(name=permission).first()
@@ -118,7 +129,8 @@ def addUser(name, phone, password, status='active', permission='user'):
 	
 	except Exception as e:
 		
-		return False
+		#return False
+		raise e
 
 
 def updateUserData(user, name=None, newPassword=None, password=None):
