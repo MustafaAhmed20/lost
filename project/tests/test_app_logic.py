@@ -1,6 +1,9 @@
 """ tests the logic/app.py"""
 from . import TestConfig
 from app.logic.app import *
+from app.logic.user import getUser
+from app.models import Feedback
+import os
 
 
 class TestAppLogic(TestConfig):
@@ -72,3 +75,110 @@ class TestAppLogic(TestConfig):
 		self.assertFalse(validatePassword(pass1, 5), "password 'pass1' pass the validation" )
 		self.assertFalse(validatePassword(pass2, 5), "password 'pass2' pass the validation" )
 		self.assertFalse(validatePassword(pass3, 5), "password 'pass3' pass the validation" )
+
+class TestAppLogic2(TestConfig):
+	""" tests the feedback logic"""
+
+	def test_addFeedback(self):
+		''' add feedback'''
+
+		text = "this app is very awesome, thank you for your hard work"
+
+		result = addFeedback(text=text)
+
+		self.assertTrue(result)
+
+		# check it in the database
+		feedback = Feedback.query.all()
+
+		self.assertEqual(len(feedback), 1, 'no feedback added')
+		self.assertEqual(feedback[0].feedback, text, 'not the same feedback')
+
+	def test_addFeedback2(self):
+		''' add feedback, then get it'''
+
+		# get admin id
+		admin_phone = os.getenv('admin_phone')
+		admin = getUser(phone=admin_phone)
+
+		text = "this app is very awesome, thank you for your hard work"
+
+		result = addFeedback(text=text, userPublicId=admin.public_id)
+
+		self.assertTrue(result)
+
+		# check it in the database
+		feedback = Feedback.query.all()
+
+		self.assertEqual(len(feedback), 1, 'no feedback added')
+		self.assertEqual(feedback[0].feedback, text, 'not the same feedback')
+
+		# check the feedback with the func
+		feedback = getFeedback(userPublicId=admin.public_id)
+
+		self.assertEqual(len(feedback), 1, 'no feedback added')
+		self.assertEqual(feedback[0].feedback, text, 'not the same feedback')
+		self.assertEqual(feedback[0].user_public_id, admin.public_id, 'not the same user')
+
+	def test_addFeedback3(self):
+		''' add feedback, then get it then delete it'''
+
+		# get admin id
+		admin_phone = os.getenv('admin_phone')
+		admin = getUser(phone=admin_phone)
+
+		text = "this app is very awesome, thank you for your hard work"
+
+		result = addFeedback(text=text, userPublicId=admin.public_id)
+
+		self.assertTrue(result)
+
+		# check it in the database
+		feedback = Feedback.query.all()
+
+		self.assertEqual(len(feedback), 1, 'no feedback added')
+		self.assertEqual(feedback[0].feedback, text, 'not the same feedback')
+
+		# check the feedback with the func
+		feedback = getFeedback(userPublicId=admin.public_id)
+
+		self.assertEqual(len(feedback), 1, 'no feedback added')
+		self.assertEqual(feedback[0].feedback, text, 'not the same feedback')
+		self.assertEqual(feedback[0].user_public_id, admin.public_id, 'not the same user')
+
+		# now delete the feedback
+		result = deleteFeedback(userPublicId=admin.public_id)
+
+		self.assertTrue(result)
+
+		# must be empty feedback now
+		feedback = getFeedback()
+
+		self.assertFalse(feedback)
+		self.assertEqual(len(feedback), 0)
+
+		
+		# add new one and delete it by id
+		result = addFeedback(text=text)
+
+		self.assertTrue(result)
+
+		# check it in the database
+		feedback = Feedback.query.all()
+
+		self.assertEqual(len(feedback), 1, 'no feedback added')
+		self.assertEqual(feedback[0].feedback, text, 'not the same feedback')
+
+		# now delete the feedback
+		result = deleteFeedback(id=feedback[0].id)
+
+		self.assertTrue(result)
+
+		# must be empty feedback now
+		feedback = getFeedback()
+
+		self.assertFalse(feedback)
+		self.assertEqual(len(feedback), 0)
+
+
+	

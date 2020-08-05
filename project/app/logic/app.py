@@ -1,6 +1,8 @@
 ''' this model contain the logic for app-related functionality'''
 import re
 
+from ..models import db, Feedback
+
 def validatePhoneNumber(value, countryCode, maxPhoneLength):
 	''' validate and extract the phone number
 		value 			: the phone interd by the user
@@ -49,4 +51,37 @@ def validatePassword(value, minLength):
 		return False
 
 	return True
+
+# Feedback modele
+def addFeedback(text, userPublicId=None):
+
+	feedback = Feedback(feedback=text, user_public_id=userPublicId)
+	db.session.add(feedback)
+	db.session.commit()
+
+	return True
+
+def getFeedback(userPublicId=None):
+
+	if not userPublicId:
+		# return all
+		return Feedback.query.all()
+
+	# feedback from one user
+	return Feedback.query.filter_by(user_public_id=userPublicId).all()
+
+def deleteFeedback(userPublicId=None, id=None):
+
+	# if no data submited return false
+	if not userPublicId and not id:
+		return False
+
+	if id:
+		feedback = Feedback.query.filter(Feedback.id == id).delete()
+		db.session.commit()
+		return True
+	if userPublicId:
+		feedback = Feedback.query.filter_by(user_public_id=userPublicId).delete()
+		db.session.commit()
+		return True
 

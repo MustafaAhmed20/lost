@@ -9,6 +9,7 @@ db =  SQLAlchemy()
 from .user import *
 from .operation import *
 from .person import *
+from .app import *
 
 def defaultData(app, db):
 	""" the default data in the databas"""
