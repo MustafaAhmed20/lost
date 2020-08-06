@@ -6,7 +6,8 @@ import datetime
 
 # the logic
 from . import (login, getUser, addUser, getCountry, validatePassword, validatePhoneNumber, 
-				registerUser, VerifyUser, forgotPassword, resetPassword, updateUserData)
+				registerUser, VerifyUser, forgotPassword, resetPassword, updateUserData,
+				getPermission, getStatus)
 
 # the shortest length for passwords
 MIN_PASSWORD_LENGTH = 5
@@ -451,6 +452,73 @@ def resetPasswordRoute():
 			return make_response(jsonify(result), 202)
 		
 		else:
-			# success - passord reset
+			# success - password reseted
 			result['status'] = status['success']
 			return make_response(jsonify(result), 200)
+
+@api.route('/getuser', methods=['POST'])
+def getUserRoute():
+	''' this route use 'POST' method because it contain sensitive data
+		get the user data with phone or public id '''
+
+	# the returned response
+	result = copy.deepcopy(baseApi)
+
+	# get the post data
+	post_data = request.get_json()
+
+	# user phone
+	userPhone = post_data.get('phone')
+	userPublicId = post_data.get('userid')
+
+	if not userPhone and not userPublicId:
+		result['status'] = status['failure']
+		result['message'] = 'required data not submitted'
+		return make_response(jsonify(result), 400)
+
+	if userPublicId:
+		user = getUser(publicId=userPublicId)
+
+	if userPhone:
+		user = getUser(phone=userPhone)
+
+	if not user:
+		result['status'] = status['success']
+		result['data']['user'] = []
+		return make_response(jsonify(result), 200)
+
+	# success
+	result['status'] = status['success']
+	result['data']['user'] = [user.toDict()]
+	return make_response(jsonify(result), 200)
+
+
+##
+##
+# Permission & Status
+@api.route('/getpermission')
+def getPermissionRoute():
+	""" Return a list of available user permissions"""
+
+	# the returned response
+	result = copy.deepcopy(baseApi)
+
+	permissions = getPermission()
+
+	result['status'] = status['success']
+	result['data']['permission'] = [p.toDict() for p in permissions]
+	return make_response(jsonify(result), 200)
+
+@api.route('/getstatus')
+def getStatusRoute():
+	""" Return a list of available user permissions"""
+
+	# the returned response
+	result = copy.deepcopy(baseApi)
+
+	userStatus = getStatus()
+
+	result['status'] = status['success']
+	result['data']['status'] = [s.toDict() for s in userStatus]
+	return make_response(jsonify(result), 200)
+

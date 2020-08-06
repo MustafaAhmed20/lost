@@ -387,7 +387,6 @@ class TestUserApi2(TestConfig):
 		self.assertTrue(user, "update admin name failed")
 		self.assertEqual(user.phone, admin_phone, "admin phone don't match")
 
-		
 class TestUserApi3(TestConfig):
 	""" tests the register user and confirm number"""
 
@@ -517,7 +516,6 @@ class TestUserApi3(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 200)
 
-
 class TestUserApi4(TestConfig):
 	""" tests the forget password and rest password"""
 
@@ -625,3 +623,55 @@ class TestUserApi4(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 202)
 
+	def test_getPermission(self):
+		''' tests getpermission route'''
+
+		result = self.client_app.get("/api/getpermission", content_type='application/json')
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertGreater(len(data['data']['permission']), 2, 'not right number of permission')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+	def test_getStatus(self):
+		''' tests the getStatus route'''
+
+		result = self.client_app.get("/api/getstatus", content_type='application/json')
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertGreater(len(data['data']['status']), 2, 'not right number of status')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+	def test_getuser(self):
+		''' tests the 'getuser' route'''
+
+		# get the user data with phone
+		admin_phone = os.getenv('admin_phone')
+		data = {'phone':admin_phone}
+
+		result = self.client_app.post("/api/getuser", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(len(data['data']['user']), 1, 'not right number of users')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		# get the user data with public id
+		admin_phone = os.getenv('admin_phone')
+		admin = getUser(phone=admin_phone)
+
+		data = {'userid':admin.public_id}
+		result = self.client_app.post("/api/getuser", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(len(data['data']['user']), 1, 'not right number of users')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)

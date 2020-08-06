@@ -119,6 +119,15 @@ class TestUserLogic2(TestConfig):
 		self.assertTrue(user)
 		self.assertEqual(user.name, 'mustafa', 'get user Failed')
 
+		# get the user with public id
+
+		public_id = user.public_id
+		user = getUser(publicId=public_id)
+
+		self.assertTrue(user)
+		self.assertEqual(user.name, 'mustafa', 'get user Failed')
+		self.assertEqual(user.public_id, public_id, 'not same public Id')
+
 	def test_registerUser(self):
 		''' regster a user and get the Verification code'''
 
@@ -252,6 +261,29 @@ class TestUserLogic2(TestConfig):
 
 		self.assertFalse(result)
 
+class TestUserLogic3(TestConfig):
+	""" tests the user logic"""
+
+	def test_getStatus(self):
+
+		status = getStatus(name='active')
+
+		self.assertTrue(status, 'no status returned')
+
+		status = getStatus()
+		self.assertTrue(status, 'no status returned')
+		self.assertGreater(len(status), 2, 'not right number of status')
+
+	def test_getPermission(self):
+
+		permission = getPermission(name='user')
+
+		self.assertTrue(permission, 'no Permission returned')
+
+		permission = getPermission()
+		self.assertTrue(permission, 'no Permission returned')
+		self.assertGreater(len(permission), 2, 'not right number of permission')
+
 class TestUserHelperFunctions(TestConfig):
 
 	def test_createVerifyCode(self):
@@ -301,4 +333,12 @@ class TestUserHelperFunctions(TestConfig):
 		codes = UserVerificationNumber.query.all()
 		self.assertFalse(codes)
 
+	def test_createPublicId(self):
+		''' tests 'createPublicId' func '''
+		from app.logic.user import _createPublicId
+
+		publicId = _createPublicId()
+
+		self.assertTrue(publicId, 'no public Id returned')
+		self.assertGreater(len(publicId), 30, 'wrong length of public Id')
 

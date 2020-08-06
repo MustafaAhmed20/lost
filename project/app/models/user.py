@@ -21,8 +21,8 @@ class Users(db.Model):
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.public_id, 'name':self.name, 'phone':self.phone, 'permissio':permission_id,\
-				'status':status_id}
+		return {'id':self.public_id, 'name':self.name, 'phone':self.phone, 'permission':self.permission_id,\
+				'status':self.status_id}
 
 class Status(db.Model):
 	""" This table represent the statuses of the user

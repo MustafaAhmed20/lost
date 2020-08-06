@@ -128,9 +128,9 @@ def addUser(name, phone, password, status='active', permission='user'):
 		return user
 	
 	except Exception as e:
+
+		return False
 		
-		#return False
-		raise e
 
 
 def updateUserData(user, name=None, newPassword=None, password=None):
@@ -337,3 +337,12 @@ def addPermission(name):
 	
 
 	return permission
+
+def getPermission(name=None):
+	""" return the Status object or None if not exist
+		return all if not name passed."""
+	
+	if not name:
+		return Permission.query.all()
+
+	return Permission.query.filter_by(name=name).first()
