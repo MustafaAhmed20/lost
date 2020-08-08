@@ -20,6 +20,48 @@ class TestAppApi(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 200)
 
+	def test_checkversion(self):
+		'''tests the 'check version' route'''
+
+		# first with valid version
+		lastVersion = os.getenv('version')
+		data = {'version':lastVersion}
+
+		result = self.client_app.post("/api/checkversion", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# with un spported version
+
+		data = {'version': '0'}
+
+		result = self.client_app.post("/api/checkversion", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  'this version not supported any more')
+		self.assertEqual(data['status'], 'failure')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 426)
+
+		# with not valid version (not a number)
+
+		data = {'version': 'not valid version'}
+
+		result = self.client_app.post("/api/checkversion", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  'the version number must be integer')		
+		self.assertEqual(data['status'], 'failure')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 400)
+
 class TestAppApi2(TestConfig):
 	""" tests the feedback Routes"""
 

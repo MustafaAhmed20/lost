@@ -2,12 +2,49 @@ from . import api, current_app, jsonify, request, make_response, jwt
 from . import status, baseApi, copy, adminRequired
 from . import getUser, addFeedback, getFeedback, deleteFeedback
 
+import os
+
 @api.route('/checkconnection')
 def checkConnectionRoute():
 
 	# the returned response
 	result = copy.deepcopy(baseApi)
 
+	result['status'] = status['success']
+	return make_response(jsonify(result), 200)
+
+@api.route('/checkversion', methods=['POST'])
+def checkVersionRoute():
+	''' if supported version (build number)'''
+
+	# the returned response
+	result = copy.deepcopy(baseApi)
+
+	# get the post data
+	post_data = request.get_json()
+
+	version = post_data.get('version')
+
+	supportedVersion  = os.getenv('version')
+
+	if not version:
+		result['status'] = status['failure']
+		result['message'] = 'required data not submitted'
+		return make_response(jsonify(result), 400)
+
+	try:
+		if int(version) < int(supportedVersion):
+			# must upgrade the app
+			result['status'] = status['failure']
+			result['message'] = 'this version not supported any more'
+			return make_response(jsonify(result), 426)
+
+	except Exception as e:
+		result['status'] = status['failure']
+		result['message'] = 'the version number must be integer'
+		return make_response(jsonify(result), 400)
+
+	# success
 	result['status'] = status['success']
 	return make_response(jsonify(result), 200)
 
