@@ -163,23 +163,27 @@ def registerUser(phone, password, name=None):
 	''' register new User with 'wait activation' Status 
 		return (user, code) if success else false'''
 
-	result = addUser(name, phone, password, status='wait', permission='user')
+	#result = addUser(name, phone, password, status='wait', permission='user')
+	result = addUser(name, phone, password, status='active', permission='user')
 
-	if result:
-		# add Verification Number to the user
+	# stop code Verification
+	return result, None
 
-		number = _createVerifyCode()
+	# if result:
+	# 	# add Verification Number to the user
 
-		code = UserVerificationNumber(code=number, user_id=result.id)
+	# 	number = _createVerifyCode()
 
-		# save the code
-		db.session.add(code)
-		db.session.commit()
+	# 	code = UserVerificationNumber(code=number, user_id=result.id)
 
-		return result, code
+	# 	# save the code
+	# 	db.session.add(code)
+	# 	db.session.commit()
 
-	else:
-		return result
+	# 	return result, code
+
+	# else:
+	# 	return result
 
 def VerifyUser(code, user_id=None, userPublicId=None, maxTimeDays=1):
 	''' if code is correct change user Status to 'active' '''
