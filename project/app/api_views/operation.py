@@ -165,9 +165,6 @@ def addObjectPerson(post_data):
 	personName = post_data.get('person_name')
 	age_id = post_data.get('age_id')
 
-	if not personName:
-		return False
-
 	# add person
 	person = addPerson(name=personName, ageId=age_id)
 	if not person:
