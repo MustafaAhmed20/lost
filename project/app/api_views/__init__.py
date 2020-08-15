@@ -125,10 +125,10 @@ def loginActiveRequired(f):
 			return make_response(jsonify(result), 202)
 
 		user = getUser(publicId = userPublicId)
-		status = getStatus(name='active')
+		availableStatus = getStatus(name='active')
 
-		if status:
-			if user.id != status.id:
+		if availableStatus:
+			if user not in availableStatus.users:
 				result['status'] = status['failure']
 				result['message']  ='This user not active.'
 				return make_response(jsonify(result), 202)

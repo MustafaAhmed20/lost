@@ -432,4 +432,74 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(result.content_type, 'application/json')
 		self.assertEqual(result.status_code, 200)
 
+	def test_addoperation4(self):
+		''' add new user then add operation with it'''
+
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+		
+		if not admin_phone or not admin_password:
+			raise ValueError('Environment variables not found!')
+
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+		
+		# post requset
+		resultAdmin = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(resultAdmin.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(resultAdmin.status_code, 200)
+
+		# add user
+
+		# the user country
+		country = getCountry(phoneCode=249)
+
+		userData = {'name':'mustafa', 'phone':'0123456789', 'password':'12334a',\
+					 'status':'active', 'permission':'user', 'country_id':country.id}
+
+		headers = {'token':data['data']['token']}
+		result = self.client_app.post("/api/adduser", data=json.dumps(userData),\
+									 headers=headers,content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['status'], 'success')		
+		
+		self.assertEqual(result.status_code, 201)
+
+		# login with the new user
+		data = {'phone':'0123456789', 'password':'12334a', 'country_id':country.id}
+		resultAdmin = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(resultAdmin.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(resultAdmin.status_code, 200)
+
+		token = data['data']['token']
+
+		# try add operation with this user
+		headers = {'token':token}
+
+		data = {'date':'2020-11-15',
+				'type_id':2, 'country_id':1,
+				'object_type':'Person', 'person_name':'mustafa'}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+		
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 201)
+
 
