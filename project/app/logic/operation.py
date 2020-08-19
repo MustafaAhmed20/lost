@@ -192,6 +192,28 @@ def getOperation(**filters):
 	except Exception as e:
 		raise e
 
-	return baseQuery.filter_by(**filters).all()
+	return baseQuery.filter_by(**filters).filter_by(status_id=Status_operation.query.filter_by(name='active').first().id).all()
+
+def updateOperationStatus(newStatus, operation=None, operationId=None):
+	''' update operation status - return true is success else false'''
+
+	if not operationId and not operation:
+		raise ValueError('operation object or operationId is requred')
+
+	# first get the operation
+	if operationId:
+		operation = Operations.query.get(operationId)
+
+	if not operation:
+		return False
+
+	StatusOperation = Status_operation.query.filter_by(name=newStatus).first()
+
+	if not StatusOperation:
+		return False
+
+	StatusOperation.operations.append(operation)
+	db.session.commit()
+	return True
 
 

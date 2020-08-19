@@ -283,3 +283,38 @@ class TestOperationLogic2(TestConfig):
 		
 		self.assertTrue(result, 'no operations')
 		self.assertEqual(float(result[0].lat), lat)
+
+class TestOperationLogic3(TestConfig):
+
+	def test_updateOperation(self):
+		''' tests the update operation func'''
+
+		# first add new operation
+
+		# the user who make this operation
+		userPublicId = Users.query.filter_by(name='admin').first().public_id
+
+		# the object this operation point to
+		addPerson(name='mustafa')
+		person = Person.query.first()
+		
+		type = Type_operation.query.filter_by(name='lost').first()
+		status = Status_operation.query.filter_by(name='active').first()
+		country = Country.query.first()
+
+		result = addOperation(type=type, status=status, country=country, object=person,\
+							 userPublicId= userPublicId, date=datetime.datetime.now())
+
+		operation = Operations.query.first()
+		self.assertTrue(operation, 'add new operation Failed')
+
+		# now change operation status
+		newStatus = Status_operation.query.filter_by(name='closed').first()
+
+		result = updateOperationStatus(operationId=operation.id, newStatus=newStatus.name)
+
+		self.assertTrue(result, 'change not success')
+
+		# now check the opration status
+		self.assertEqual(operation.status.name, newStatus.name, 'operatuin status not changed')
+

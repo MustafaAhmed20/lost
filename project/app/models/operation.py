@@ -1,6 +1,9 @@
 from . import db, generic_relationship
 from . import datetime
 
+# user class
+from . import Users
+
 class Operations(db.Model):
 	""" The main table represents the operations in the app"""
 	__name__ = 'Operations'
@@ -49,7 +52,8 @@ class Operations(db.Model):
 				'type_id':self.type_id, 'status_id':self.status_id,
 				'lat':float(self.lat) if self.lat else None,
 				'lng':float(self.lng) if self.lng else None,
-				'details': self.details}
+				'details': self.details,
+				'user': Users.query.get(self.user_id).toDict()}
 
 class Type_operation(db.Model):
 	"""Define the type of the operation. (lost - found)"""

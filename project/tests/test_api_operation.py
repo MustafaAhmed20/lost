@@ -268,7 +268,7 @@ class TestOperationApi2(TestConfig):
 		self.assertTrue(photos)
 		self.assertEqual(len(photos), 3)
 
-	def test_getoperation2(self):
+	def test_addoperation2(self):
 		""" add operations then get it """
 
 		# first log-in 
@@ -427,6 +427,7 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(data['data']['operations'][0]['details'], 'this long paragraph of details', 'no details')
 		self.assertEqual(data['data']['operations'][0]['lat'], lat,'no details')
 		self.assertEqual(data['data']['operations'][0]['lng'], lng,'no details')
+		self.assertEqual(data['data']['operations'][0]['user']['name'], 'admin','no user')
 
 		
 		self.assertEqual(result.content_type, 'application/json')
@@ -503,3 +504,68 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(result.status_code, 201)
 
 
+class TestOperationApi3(TestConfig):
+	
+	def test_updateoperationStatus(self):
+		''' tests the update operation status route'''
+
+		# first log-in
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+	
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 200)
+
+		token = data['data']['token']
+
+
+		# add new operation
+		headers = {'token':token}
+		
+		data = {'date':'2020-11-15',
+				'type_id':2, 'country_id':1,
+				'object_type':'Person', 'person_name':'mustafa'}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 201)
+
+		result = self.client_app.get("/api/getoperation", data=data,
+			content_type="multipart/form-data")
+		
+
+		data = json.loads(result.data.decode())
+
+		operation = data['data']['operations'][0]
+
+		
+		# now update status to closed
+		data = {'status':'closed', 'operationid':operation['id']}
+
+		result = self.client_app.put("/api/updateoperationstatus", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)

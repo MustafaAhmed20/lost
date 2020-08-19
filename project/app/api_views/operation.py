@@ -3,7 +3,8 @@ from . import status, baseApi, jwt, copy
 from . import adminRequired, loginRequired, loginActiveRequired, saveFile, MAX_IMEGES_NUMBER
 
 # the logic
-from . import addOperation, addCountry, getCountry, getStatus_operation, getType_operation, getOperation
+from . import (addOperation, addCountry, getCountry, getStatus_operation, getType_operation, 
+	getOperation, updateOperationStatus)
 from . import addPerson, addPhoto, deletePerson
 from . import getUser
 import datetime
@@ -373,4 +374,65 @@ def getOperationRoute():
 		result['data']['operations'] = [operation.toDict() for operation in operations]
 		return make_response(jsonify(result), 200)
 
+@api.route('/updateoperationstatus', methods=['PUT'])
+@loginActiveRequired
+def updateOperationStatusRoute():
+	# update the operation status
 
+	result = copy.deepcopy(baseApi)
+
+	# get the post data
+	post_data = request.form
+
+	newStatus = post_data.get('status')
+	operation_id = post_data.get('operationid')
+
+	if not newStatus or not operation_id:
+		result['status'] = status['failure']
+		result['message']  = "required data 'date' not submitted"
+		return make_response(jsonify(result), 400)
+
+	# get the user who want to make this change(must be admin or same user who created the operation)
+	token = request.headers.get('token')
+	try:
+		payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
+		userPublicId = payload['user']
+	except jwt.ExpiredSignatureError :
+		result['status'] = status['failure']
+		result['message']  = 'Signature expired. Please log in again.'
+		return make_response(jsonify(result), 202)
+	except jwt.InvalidTokenError:
+		result['status'] = status['failure']
+		result['message']  ='Invalid token. Please log in again.'
+		return make_response(jsonify(result), 202)
+
+	# the user must be admin or same user
+	# get the user
+	user = getUser(publicId=userPublicId)
+	if not user:
+		result['status'] = status['failure']
+		result['message'] = 'Some error occurred. Please try again'
+		return make_response(jsonify(result), 401)
+
+	operation = getOperation(id=operation_id)
+	if not operation:
+		result['status'] = status['failure']
+		result['message'] = 'not valid operation id'
+		return make_response(jsonify(result), 401)
+	
+	if not operation in user.operations or not user.id == operation.user_id:
+		result['status'] = status['failure']
+		result['message']  = "this user don't have permission"
+		return make_response(jsonify(result), 401)
+
+
+	resultUpdate = updateOperationStatus(operation=operation, newStatus=newStatus)
+
+	if not resultUpdate:
+		result['status'] = status['failure']
+		result['message'] = 'Some error occurred. Please try again'
+		return make_response(jsonify(result), 401)
+
+	# success
+	result['status'] = status['success']
+	return make_response(jsonify(result), 200)
