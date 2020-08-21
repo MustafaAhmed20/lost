@@ -5,8 +5,11 @@ from . import adminRequired, loginRequired, loginActiveRequired, saveFile, MAX_I
 # the logic
 from . import (addOperation, addCountry, getCountry, getStatus_operation, getType_operation, 
 	getOperation, updateOperationStatus)
-from . import addPerson, addPhoto, deletePerson
+from . import addPhoto
 from . import getUser
+# avilable Objects Types
+from . import availableObjectsTypes, addObject, deleteObject
+
 import datetime
 
 @api.route('/addcountry', methods=['POST'])
@@ -158,30 +161,6 @@ def getTypeOperationRoute(type_id=None):
 		result['data']['type_operation'] = [c.toDict() for c in type]
 		return make_response(jsonify(result), 200)
 
-
-# helper functions to add objects
-def addObjectPerson(post_data):
-	""" get the prson data. return False if add person failed. 
-		return the person object if added"""
-	personName = post_data.get('person_name')
-	age_id = post_data.get('age_id')
-
-	# add person
-	person = addPerson(name=personName, ageId=age_id)
-	if not person:
-		return False
-
-	return person
-
-def deleteObjectPerson(object):
-	''' delete object'''
-
-	return deletePerson(object=object)
-
-
-object_types_add = {'Person':addObjectPerson}
-object_types_delete = {'Person':deleteObjectPerson}
-
 @api.route('/addoperation', methods=['POST'])
 @loginActiveRequired
 def addOperationRoute():
@@ -259,13 +238,18 @@ def addOperationRoute():
 	# first get the object data
 	object_type = post_data.get('object_type')
 	
-	if not object_type or object_type not in object_types_add:
+	if not object_type :
 		result['status'] = status['failure']
 		result['message'] = 'required data not submitted'
 		return make_response(jsonify(result), 400)
 
+	if not object_type in availableObjectsTypes:
+		result['status'] = status['failure']
+		result['message'] = 'not valid object type'
+		return make_response(jsonify(result), 400)
+
 	# add the object data with helper function
-	object = object_types_add[object_type](post_data)
+	object = addObject(object_type, post_data)
 
 	if not object :
 		result['status'] = status['failure']
@@ -296,7 +280,7 @@ def addOperationRoute():
 
 	if not operation:
 		# delete added object
-		object_types_delete[object_type](object)
+		deleteObject(object_type, object)
 		
 		result['status'] = status['failure']
 		result['message'] = 'Some error occurred. Please try again'
