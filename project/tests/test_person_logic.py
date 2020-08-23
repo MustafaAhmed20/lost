@@ -7,13 +7,14 @@ class TestUserLogic(TestConfig):
 	
 	def test_addPerson(self):
 		'''add new person'''
-
-		result = addPerson(name='mustafa')
+		age = getAge()[0]
+		result = addPerson(name='mustafa', gender='male', ageId=age.id, skin=2)
 
 		person = Person.query.filter_by(name='mustafa').first()
 
 		self.assertTrue(person, 'add person Failed')
 		self.assertEqual(result.name, 'mustafa', 'add person Failed')
+		self.assertEqual(person.skin, 2, 'not same skin')
 
 	def test_addAge(self):
 		'''add new age'''
@@ -29,8 +30,9 @@ class TestUserLogic(TestConfig):
 		""" add new photo to a new person """
 
 		link = r'https://losthuman.ru/assets/images/2018-09-22-formatirovanie-strok-v-python/top_image.jpg'
+		age = getAge()[0]
 
-		addPerson(name='mustafa')
+		addPerson(name='mustafa', gender='male', ageId=age.id)
 
 		person = Person.query.filter_by(name='mustafa').first()
 
@@ -46,8 +48,9 @@ class TestUserLogic(TestConfig):
 	def test_deletePerson(self):
 		""" add new person and photos then delete them"""
 		link = r'https://losthuman.ru/assets/images/2018-09-22-formatirovanie-strok-v-python/top_image.jpg'
+		age = getAge()[0]
 		
-		addPerson(name='mustafa')
+		addPerson(name='mustafa', gender='male', ageId=age.id)
 
 		person = Person.query.filter_by(name='mustafa').first()
 
@@ -96,7 +99,8 @@ class TestUserLogic2(TestConfig):
 		""" add photos then find it"""
 
 		link = 'this some link'
-		object = addPerson(name='mustafa')
+		age = getAge()[0]
+		object = addPerson(name='mustafa', gender='male', ageId=age.id)
 
 		newPhoto =  addPhoto(link=link, object=object)
 

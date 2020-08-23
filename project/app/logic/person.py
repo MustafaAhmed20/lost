@@ -1,11 +1,19 @@
 from ..models import db, Person, Age, Photos
 
 # person model
-def addPerson(name, ageId=None):
+def addPerson(name, gender, ageId=None, skin=None):
 	""" add new Person 
 	return the new person object if added or false if failed"""
+
+	if gender not in ('male', 'female'):
+		raise ValueError('not valid gender')
+	if gender == 'male':
+		gender = True
+	else:
+		gender = False
+
 	try:
-		person = Person(name=name)
+		person = Person(name=name, gender=gender, skin=skin)
 
 		if ageId:
 			age = Age.query.get(ageId)
@@ -20,14 +28,14 @@ def addPerson(name, ageId=None):
 	return person
 
 def getPerson(id=None):
-	""" return the age object or None if not exist
-		return a list of all ages if no id passed."""
+	""" return the Person object or None if not exist
+		return a list of all Persons if no id passed."""
 
 	if not id:
 		return Person.query.all()
 
 	if id:
-		return Age.query.get(id)
+		return Person.query.get(id)
 
 def deletePerson(id=None, object=None):
 	""" delete the photos then delete the person
@@ -41,14 +49,12 @@ def deletePerson(id=None, object=None):
 	if not person:
 		return False
 
-	photos = Photos.query.filter_by(object=person).all()
-
-	# delete the photos
-	for photo in photos:
-		db.session.delete(photo)
+	Photos.query.filter_by(object=person).delete()
 
 	# delete the person
-	db.session.delete(person)	
+	db.session.delete(person)
+
+	db.session.commit()	
 
 	return True
 

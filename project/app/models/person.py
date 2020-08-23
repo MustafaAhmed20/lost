@@ -7,12 +7,20 @@ class Person(db.Model):
 
 	name = db.Column(db.String(80))
 	
-	age_id = db.Column(db.Integer, db.ForeignKey('age.id'))
+	age_id = db.Column(db.Integer, db.ForeignKey('age.id'), nullable=False)
+
+	# gender if the person
+	gender = db.Column(db.Boolean, nullable=False)
+
+	# skin color - range from (1 - 5)
+	skin = db.Column(db.Integer)
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.id, 'name':self.name, 'age_id':self.age_id,\
-				'photos':[photo.link for photo in Photos.query.filter_by(object=self).all()]}
+		return {'id':self.id, 'name':self.name, 'age_id':self.age_id,
+				'photos':[photo.link for photo in Photos.query.filter_by(object=self).all()],
+				'gender': 'male' if self.gender else 'female',
+				'skin':self.skin}
 
 class Age(db.Model):
 	"""This table represents the age ranges for persons"""

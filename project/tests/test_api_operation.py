@@ -1,7 +1,7 @@
 from . import TestConfig
 from app.api_views.operation import *
 from app.logic.operation import getCountry
-from app.logic.person import getPerson, getPohto
+from app.logic.person import getPerson, getPohto, deletePerson
 
 
 import json
@@ -230,23 +230,26 @@ class TestOperationApi2(TestConfig):
 		# add new operation
 		headers = {'token':token}
 		file_path = os.path.join(current_app.config['UPLOAD_FOLDER'], os.getenv('IMEGE_TEST_NAME'))
-		
-		
+
+
 		# send 3 photos
 		photos = []
 		for _ in range(3):
 			photos.append((open(file_path, 'rb'), os.getenv('IMEGE_TEST_NAME')))
-		
-		
-		
+
+		from app.models import Age
+		age = Age.query.first()
+
+
+
 		data = {'photos':photos, 'date':'2020-11-15',
 				'type_id':2, 'country_id':1,
-				'object_type':'Person', 'person_name':'mustafa'}
+				'object_type':'Person', 'person_name':'mustafa', 'gender':'male', 'age_id':age.id}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
 			content_type="multipart/form-data")
 
-		
+
 		# close the files
 		for file in photos:
 			file[0].close()
@@ -261,12 +264,18 @@ class TestOperationApi2(TestConfig):
 		# the person get added
 		person = getPerson()
 
-		self.assertTrue(person)
+		self.assertTrue(person[0])
 
-		photos = getPohto()
+		photos = getPohto(object=person[0])
 
 		self.assertTrue(photos)
 		self.assertEqual(len(photos), 3)
+
+		# delete person to get rid of the photos
+		deletePerson(id=person[0].id)
+
+		# no photos after delete
+		self.assertEqual(len(getPohto()), 0, 'photos not deleted')
 
 	def test_addoperation2(self):
 		""" add operations then get it """
@@ -290,13 +299,16 @@ class TestOperationApi2(TestConfig):
 
 		token = data['data']['token']
 
+		from app.models import Age
+		age = Age.query.first()
+
 
 		# add new operation
 		headers = {'token':token}
 
 		data = {'date':'2020-11-15',
 				'type_id':1, 'country_id':'1',
-				'object_type':'Person', 'person_name':'mustafa'}
+				'object_type':'Person', 'person_name':'mustafa', 'gender':'male','age_id':age.id}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
 			content_type="multipart/form-data")
@@ -313,7 +325,7 @@ class TestOperationApi2(TestConfig):
 
 		data = {'date':'2020-10-25',
 				'type_id':2, 'country_id':'2',
-				'object_type':'Person', 'person_name':'test'}
+				'object_type':'Person', 'person_name':'test', 'gender':'male', 'age_id':age.id}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
 			content_type="multipart/form-data")
@@ -400,7 +412,7 @@ class TestOperationApi2(TestConfig):
 		data = {'date':'2020-11-15',
 				'type_id':1, 'country_id':'1',
 				'object_type':'Person', 'person_name':'mustafa', 'age_id':age.id,
-				'details': 'this long paragraph of details',
+				'details': 'this long paragraph of details', 'gender':'male', 'skin':2,
 				'lat':lat, 'lng':lng}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
@@ -425,9 +437,12 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(data['status'], 'success')
 
 		self.assertEqual(data['data']['operations'][0]['details'], 'this long paragraph of details', 'no details')
-		self.assertEqual(data['data']['operations'][0]['lat'], lat,'no details')
-		self.assertEqual(data['data']['operations'][0]['lng'], lng,'no details')
-		self.assertEqual(data['data']['operations'][0]['user']['name'], 'admin','no user')
+		self.assertEqual(data['data']['operations'][0]['lat'], lat, 'no lat')
+		self.assertEqual(data['data']['operations'][0]['lng'], lng, 'no lng')
+		self.assertEqual(data['data']['operations'][0]['object']['skin'], 2, 'no skin')
+		self.assertEqual(data['data']['operations'][0]['object']['age_id'], age.id, 'not same age')
+		self.assertEqual(data['data']['operations'][0]['user']['name'], 'admin', 'no user')
+		
 
 		
 		self.assertEqual(result.content_type, 'application/json')
@@ -485,13 +500,15 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(resultAdmin.status_code, 200)
 
 		token = data['data']['token']
+		from app.models import Age
+		age = Age.query.first()
 
 		# try add operation with this user
 		headers = {'token':token}
 
 		data = {'date':'2020-11-15',
 				'type_id':2, 'country_id':1,
-				'object_type':'Person', 'person_name':'mustafa'}
+				'object_type':'Person', 'person_name':'mustafa', 'gender':'male', 'age_id':age.id}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
 			content_type="multipart/form-data")
@@ -528,13 +545,16 @@ class TestOperationApi3(TestConfig):
 
 		token = data['data']['token']
 
+		from app.models import Age
+		age = Age.query.first()
+
 
 		# add new operation
 		headers = {'token':token}
 		
 		data = {'date':'2020-11-15',
 				'type_id':2, 'country_id':1,
-				'object_type':'Person', 'person_name':'mustafa'}
+				'object_type':'Person', 'person_name':'mustafa', 'gender':'male', 'age_id':age.id}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
 			content_type="multipart/form-data")

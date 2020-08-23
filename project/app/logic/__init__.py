@@ -27,11 +27,17 @@ def deleteObject(objectName, object):
 def _addObjectPerson(post_data):
 	""" get the prson data. return False if add person failed. 
 		return the person object if added"""
+
 	personName = post_data.get('person_name')
+	gender = post_data.get('gender')
+	skin = post_data.get('skin')
 	age_id = post_data.get('age_id')
 
+	if not age_id or not gender:
+		return False
+
 	# add person
-	person = addPerson(name=personName, ageId=age_id)
+	person = addPerson(name=personName, ageId=age_id, gender=gender, skin=skin)
 	if not person:
 		return False
 

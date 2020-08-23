@@ -46,9 +46,10 @@ class TestOperationLogic(TestConfig):
 
 		# the user who make this operation
 		userPublicId = Users.query.filter_by(name='admin').first().public_id
+		age = getAge()[0]
 
 		# the object this operation point to
-		addPerson(name='mustafa')
+		addPerson(name='mustafa', gender='male', ageId=age.id)
 		person = Person.query.first()
 		
 		type = Type_operation.query.filter_by(name='lost').first()
@@ -84,9 +85,10 @@ class TestOperationLogic(TestConfig):
 
 		# the user who make this operation
 		userPublicId = Users.query.filter_by(name='admin').first().public_id
+		age = getAge()[0]
 
 		# the object this operation point to
-		addPerson(name='mustafa')
+		addPerson(name='mustafa', gender='male', ageId=age.id)
 		person = Person.query.first()
 		
 		type = Type_operation.query.filter_by(name='found').first()
@@ -127,7 +129,7 @@ class TestOperationLogic(TestConfig):
 
 		# the object this operation point to
 		age = getAge()
-		addPerson(name='mustafa', ageId=age[0].id)
+		addPerson(name='mustafa', ageId=age[0].id, gender='male')
 		person = Person.query.first()
 		
 		type = Type_operation.query.filter_by(name='lost').first()
@@ -223,9 +225,10 @@ class TestOperationLogic2(TestConfig):
 
 		# the user who make this operation
 		userPublicId = Users.query.filter_by(name='admin').first().public_id
+		age = getAge()[0]
 
 		# the object this operation point to
-		addPerson(name='mustafa')
+		addPerson(name='mustafa', gender='male', ageId=age.id)
 		person = Person.query.first()
 		
 		type = Type_operation.query.filter_by(name='lost').first()
@@ -293,9 +296,10 @@ class TestOperationLogic3(TestConfig):
 
 		# the user who make this operation
 		userPublicId = Users.query.filter_by(name='admin').first().public_id
+		age = getAge()[0]
 
 		# the object this operation point to
-		addPerson(name='mustafa')
+		addPerson(name='mustafa', gender='male', ageId=age.id)
 		person = Person.query.first()
 		
 		type = Type_operation.query.filter_by(name='lost').first()

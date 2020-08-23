@@ -8,6 +8,9 @@ def create_app():
 	from . import models, api_views #, services
 	app = Flask(__name__)
 
+	#import pymysql
+	#pymysql.install_as_MySQLdb()
+
 	# Configurations
 	app.config.from_object('config')
 
