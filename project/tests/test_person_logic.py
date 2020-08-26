@@ -36,7 +36,7 @@ class TestUserLogic(TestConfig):
 
 		person = Person.query.filter_by(name='mustafa').first()
 
-		result = addPhoto(link=link, object=person)
+		result = addPhoto(link=link, fullPath=link, object=person)
 
 		photo = Photos.query.filter_by(link=link).first()
 
@@ -55,10 +55,10 @@ class TestUserLogic(TestConfig):
 		person = Person.query.filter_by(name='mustafa').first()
 
 		# add 4 photos to person
-		addPhoto(link=link, object=person)
-		addPhoto(link=link, object=person)
-		addPhoto(link=link, object=person)
-		addPhoto(link=link, object=person)
+		addPhoto(link=link, fullPath=link, object=person)
+		addPhoto(link=link, fullPath=link, object=person)
+		addPhoto(link=link, fullPath=link, object=person)
+		addPhoto(link=link, fullPath=link, object=person)
 
 		result = deletePerson(id=person.id)
 
@@ -102,7 +102,7 @@ class TestUserLogic2(TestConfig):
 		age = getAge()[0]
 		object = addPerson(name='mustafa', gender='male', ageId=age.id)
 
-		newPhoto =  addPhoto(link=link, object=object)
+		newPhoto =  addPhoto(link=link, fullPath=link, object=object)
 
 		result = getPohto(id=newPhoto.id)
 

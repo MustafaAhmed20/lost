@@ -44,8 +44,11 @@ class Photos(db.Model):
 	__tablename__ = 'photos'
 	id = db.Column(db.Integer, primary_key=True)
 
-	#link to the photo
+	# link to the photo
 	link = db.Column(db.TEXT)
+
+	# full path
+	full_path = db.Column(db.TEXT)
 
 	# This is used to discriminate between the linked tables.
 	object_type = db.Column(db.Unicode(255))

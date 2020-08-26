@@ -153,21 +153,21 @@ def saveFile(file):
 		ext = file.filename.split('.')[-1]
 		if ext.lower() not in ALLOWED_EXTENSIONS:
 			return False
-			
+
 
 		filename = filename.split('.')[0] + str(datetime.datetime.now()) + '.' + ext
 		filename = secure_filename(filename)
 		path = os.path.join(current_app.config['UPLOAD_FOLDER'], filename)
 		file.save(path)
 
-		#return path
-		return f'static/imeges/{filename}'
+
+		return path, f'/static/imeges/{filename}'
 
 	except Exception as e:
-		
+
 		return False
 
-	
+
 from .user import *
 from .person import *
 from .operation import *

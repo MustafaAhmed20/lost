@@ -293,9 +293,10 @@ def addOperationRoute():
 			if index + 1 > MAX_IMEGES_NUMBER:
 				break
 			
-			link = saveFile(file)
-			if link:
-				addPhoto(link=link, object=object)
+			resultPhoto = saveFile(file)
+			if resultPhoto:
+				fullPath, link = resultPhoto
+				addPhoto(link=link, fullPath=fullPath ,object=object)
 			
 
 
