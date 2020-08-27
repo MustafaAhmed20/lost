@@ -10,6 +10,7 @@ from .user import *
 from .operation import *
 from .person import *
 from .app import *
+from .car import *
 
 def defaultData(app, db):
 	""" the default data in the databas"""
