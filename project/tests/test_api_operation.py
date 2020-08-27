@@ -520,6 +520,74 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(result.content_type, 'application/json')
 		self.assertEqual(result.status_code, 201)
 
+	def test_addoperation5(self):
+		''' add operation with full data then get it - with 'car' object'''
+
+		# first log-in 
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+	
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 200)
+
+		token = data['data']['token']
+
+
+		# add new operation
+		headers = {'token':token}
+
+		lat = 48.856613
+		lng = 2.352222
+
+		data = {'date':'2020-11-15',
+				'type_id':1, 'country_id':'1',
+				'object_type':'Car', 'model':'toyota', 'car_type':'1', 'brand':'brand',
+				'plate_number_letters':'fds', 'plate_number_numbers': '321',
+				'details': 'this long paragraph of details',
+				'lat':lat, 'lng':lng}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 201)
+
+
+		# get the operation
+		data = {}
+
+		result=self.client_app.get('/api/getoperation', query_string=data, content_type='application/json')
+		data = json.loads(result.data.decode())
+
+
+		self.assertTrue(data['data']['operations'])
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+
+		self.assertEqual(data['data']['operations'][0]['details'], 'this long paragraph of details', 'no details')
+		self.assertEqual(data['data']['operations'][0]['lat'], lat, 'no lat')
+		self.assertEqual(data['data']['operations'][0]['lng'], lng, 'no lng')
+		self.assertEqual(data['data']['operations'][0]['object']['model'], 'toyota', 'no car model')
+		self.assertEqual(data['data']['operations'][0]['object']['brand'], 'brand', 'not same brand')
+		self.assertEqual(data['data']['operations'][0]['user']['name'], 'admin', 'no user')
+		
+
+		
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
 
 class TestOperationApi3(TestConfig):
 	

@@ -1,4 +1,5 @@
 from ..models import db, Car
+from .person import deletePhoto
 
 # car model
 def addCar(type, plateNumberLetters, plateNumberNumbers, brand, model):
@@ -34,3 +35,25 @@ def getCar(id=None, type=None, plateNumberLetters=None, plateNumberNumbers=None)
 
 
 	return None
+
+def deleteCar(id=None, object=None):
+	""" delete the photos then delete the car
+		perm : object = the car object"""
+
+	if id:
+		car = Car.query.get(id)
+	elif object:
+		car = object
+
+	if not car:
+		return False
+
+	# delete the photos
+	deletePhoto(car)
+
+	# delete the person
+	db.session.delete(car)
+
+	db.session.commit()	
+
+	return True

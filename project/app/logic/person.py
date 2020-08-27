@@ -1,15 +1,6 @@
 from ..models import db, Person, Age, Photos
 import os
 
-def _deletePhoto(path):
-	''' delete photo from the system'''
-	try:
-		os.remove(path)
-	except Exception as e:
-		pass
-
-	return True
-
 # person model
 def addPerson(name, gender, ageId=None, skin=None):
 	""" add new Person 
@@ -59,14 +50,8 @@ def deletePerson(id=None, object=None):
 	if not person:
 		return False
 
-	photos = Photos.query.filter_by(object=person).all()
-	# delete the photos from the system
-	for photo in photos:
-		_deletePhoto(photo.full_path)
-
-	# delete the photos from db
-	for photo in photos:
-		db.session.delete(photo)
+	# delete the photos
+	deletePhoto(person)
 
 	# delete the person
 	db.session.delete(person)
@@ -132,3 +117,22 @@ def getPohto(id=None, object=None):
 
 	if object:
 		return Photos.query.filter_by(object=object).all()
+
+def deletePhoto(object):
+	''' delete photo from the system
+		perm: object that connected to photos'''
+	photos = Photos.query.filter_by(object=object).all()
+
+	# delete the photos from the system
+	for photo in photos:
+		try:
+			os.remove(photo.full_path)
+		except Exception as e:
+			pass
+
+	# delete the photos from db
+	for photo in photos:
+		db.session.delete(photo)
+	db.session.commit()
+
+	return True
