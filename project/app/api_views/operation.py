@@ -260,6 +260,10 @@ def addOperationRoute():
 	lat = post_data.get('lat')
 	lng = post_data.get('lng')
 
+	# location of the item (as text)
+	state = post_data.get('state')
+	city = post_data.get('city')
+
 	# validate
 	try:
 		if lat or lng:
@@ -274,8 +278,9 @@ def addOperationRoute():
 	details = post_data.get('details')
 
 
-	operation = addOperation(country=country, object=object, userPublicId=userPublicId,\
-	 			date=dateObject, type=type, status=s, lat=lat, lng=lng, details=details)
+	operation = addOperation(country=country, object=object, userPublicId=userPublicId,
+	 			date=dateObject, type=type, status=s, lat=lat, lng=lng, details=details,
+	 			city=city, state=state)
 
 
 	if not operation:

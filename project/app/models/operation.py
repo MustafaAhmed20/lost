@@ -23,6 +23,10 @@ class Operations(db.Model):
 	lat = db.Column(db.DECIMAL(precision=12, scale=8)) 
 	lng = db.Column(db.DECIMAL(precision=12, scale=8))
 
+	# location as Text
+	state = db.Column(db.TEXT)
+	city = db.Column(db.TEXT)
+
 	# the details of the operation
 	details = db.Column(db.TEXT)
 
@@ -52,6 +56,7 @@ class Operations(db.Model):
 				'type_id':self.type_id, 'status_id':self.status_id,
 				'lat':float(self.lat) if self.lat else None,
 				'lng':float(self.lng) if self.lng else None,
+				'state': self.state, 'city': self.city,
 				'details': self.details,
 				'user': Users.query.get(self.user_id).toDict()}
 

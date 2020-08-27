@@ -90,7 +90,7 @@ def getType_operation(id=None, name=None):
 	return None
 
 # Operations model
-def addOperation(country, object, userPublicId, date, type=None, status=None, lat=None, lng=None, details=None):
+def addOperation(country, object, userPublicId, date, type=None, status=None, lat=None,state=None, city=None, lng=None, details=None):
 	
 	""" return the new Operation object added correctly else False.
 		perm: country 		= the Country object 
@@ -102,10 +102,12 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 		perm: status_id 	= the  Status_operation object
 		perm: lat 			= the lat of this Operation
 		perm: lng 			= the lng of this Operation
+		perm: state 		= the location(state) of this Operation
+		perm: city 			= the location(city) of this Operation
 		perm: details 		= the details of this Operation"""
 	
 	try:
-		operation = Operations(object = object, date = date)
+		operation = Operations(object=object, date=date, state=state, city=city)
 		if lat:
 			operation.lat = float(lat)
 		if lng:
@@ -115,16 +117,13 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 
 		if not type:
 			type = getType_operation(name='lost')
-		
 
 		if not status:
 			status = getStatus_operation(name='active')
-		
 
-		
 		# get the depended objects
 		user = Users.query.filter_by(public_id=userPublicId).first()
-		
+
 
 		user.operations.append(operation)
 		type.operations.append(operation)
@@ -133,7 +132,7 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 
 		db.session.add(operation)
 		db.session.commit()
-		
+
 	except Exception as e:
 		return False
 

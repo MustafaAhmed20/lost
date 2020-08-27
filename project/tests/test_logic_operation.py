@@ -141,7 +141,7 @@ class TestOperationLogic(TestConfig):
 
 		result = addOperation(type=type, status=status, country=country, object=person,\
 							 userPublicId= userPublicId, date=datetime.datetime.now(), lat=lat, lng=lng,
-							 details=details)
+							 details=details, city='cairo', state='ciro')
 
 		operation = Operations.query.first()
 
