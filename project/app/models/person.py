@@ -18,7 +18,6 @@ class Person(db.Model):
 	def toDict(self):
 		""" return dict representation of the object """
 		return {'id':self.id, 'name':self.name, 'age_id':self.age_id,
-				'photos':[photo.link for photo in Photos.query.filter_by(object=self).all()],
 				'gender': 'male' if self.gender else 'female',
 				'skin':self.skin}
 

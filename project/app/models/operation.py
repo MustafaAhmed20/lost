@@ -1,4 +1,5 @@
 from . import db, generic_relationship
+from .person import Photos
 from . import datetime
 
 # user class
@@ -36,7 +37,7 @@ class Operations(db.Model):
 	# This is used to point to the primary key of the linked row.
 	object_id = db.Column(db.Integer)
 
-	# this this used to connect to object desired like(person - car)
+	# this this used to connect to object desired like(person - car - etc)
 	object = generic_relationship(object_type, object_id)
 
 	# type of the operation
@@ -58,7 +59,8 @@ class Operations(db.Model):
 				'lng':float(self.lng) if self.lng else None,
 				'state': self.state, 'city': self.city,
 				'details': self.details,
-				'user': Users.query.get(self.user_id).toDict()}
+				'user': Users.query.get(self.user_id).toDict(),
+				'photos':[photo.link for photo in Photos.query.filter_by(object=self.object).all()]}
 
 class Type_operation(db.Model):
 	"""Define the type of the operation. (lost - found)"""

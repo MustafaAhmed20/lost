@@ -1,7 +1,7 @@
 from ..models import db, Operations, Type_operation, Status_operation, Country, Users
 
 # import all the class that operation can use it as object
-from ..models import Person
+from ..models import Person, Car
 
 # Country model
 def addCountry(name, phoneCode, phoneLength, isoName):
