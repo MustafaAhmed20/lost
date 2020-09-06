@@ -73,6 +73,53 @@ class TestUserApi(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 400)
 
+	def test_checkLogin(self):
+		''' tests the 'checklogin' route '''
+
+		# post requset
+		result = self.client_app.post("/api/checklogin", content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertNotEqual(data['status'], 'success')
+		self.assertNotEqual(result.status_code, 200)
+
+		
+		# now login
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+		
+		if not admin_phone or not admin_password:
+			raise ValueError('Environment variables not found!')
+		
+		# the user country
+		country = getCountry(phoneCode=20)
+
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+
+		self.assertTrue(data['data']['token'], 'no token returned')
+
+		token = data['data']['token']
+		headers = {'token':token}
+		
+		# check login again
+		result = self.client_app.post("/api/checklogin", headers=headers, content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 200)
+
+
+
+
 class TestUserApi2(TestConfig):
 	""" tests the add user """
 

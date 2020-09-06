@@ -12,6 +12,14 @@ from . import (login, getUser, addUser, getCountry, validatePassword, validatePh
 # the shortest length for passwords
 MIN_PASSWORD_LENGTH = 5
 
+@api.route('/checklogin', methods=['POST'])
+@loginRequired
+def checkLoginRoute():
+	''' this route just for checking the token if valid or not'''
+	result = copy.deepcopy(baseApi)
+	result['status'] = status['success']
+	return make_response(jsonify(result), 200)
+
 @api.route('/login', methods=['POST'])
 def loginUserRoute():
 	result = copy.deepcopy(baseApi)
