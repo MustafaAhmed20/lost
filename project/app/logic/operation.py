@@ -161,37 +161,43 @@ def getOperation(**filters):
 	availableFilters = ['id', 'country_id', 'object', 'user_id', 'date',\
 	 'add_date', 'type_id', 'status_id', 'lat', 'lng']
 
+	allowedFilters = {}
+
 	for filter in filters:
 		if filter not in availableFilters:
-			raise ValueError(f'not valid filter {filter}')
+			#raise ValueError(f'not valid filter {filter}')
+			pass
+		else:
+			allowedFilters[filter] = ''.join(filters[filter]) if type(filters[filter]) is list else filters[filter]
 
 	baseQuery = Operations.query
-	if not filters:
+	if not allowedFilters:
 		return baseQuery.all()
-	
-	if 'id' in filters:
-		return baseQuery.get(filters['id'])
-	
-	if 'object' in filters:
-		
+
+	if 'id' in allowedFilters:
+		return baseQuery.get(allowedFilters['id'])
+
+	if 'object' in allowedFilters:
+
 		try:
-			object = eval(filters['object'])
-		except Exception as e:
-			raise e
+			object = eval(allowedFilters['object'])
 
-		baseQuery = baseQuery.filter(Operations.object.is_type(object))
+			baseQuery = baseQuery.filter(Operations.object.is_type(object))
 
-		del filters['object']
+		except Exception as e:	
+			return None
+
+		del allowedFilters['object']
 	
 	try:
-		if 'lat' in filters:
-			filters['lat'] = float(filters['lat'])
-		if 'lng' in filters:
-			filters['lng'] = float(filters['lng'])
+		if 'lat' in allowedFilters:
+			allowedFilters['lat'] = float(allowedFilters['lat'])
+		if 'lng' in allowedFilters:
+			allowedFilters['lng'] = float(allowedFilters['lng'])
 	except Exception as e:
 		raise e
 
-	return baseQuery.filter_by(**filters).filter_by(status_id=Status_operation.query.filter_by(name='active').first().id).all()
+	return baseQuery.filter_by(**allowedFilters).filter_by(status_id=Status_operation.query.filter_by(name='active').first().id).all()
 
 def updateOperationStatus(newStatus, operation=None, operationId=None):
 	''' update operation status - return true is success else false'''

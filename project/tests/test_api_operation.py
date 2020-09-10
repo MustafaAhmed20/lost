@@ -325,7 +325,9 @@ class TestOperationApi2(TestConfig):
 
 		data = {'date':'2020-10-25',
 				'type_id':2, 'country_id':'2',
-				'object_type':'Person', 'person_name':'test', 'gender':'male', 'age_id':age.id}
+				'object_type':'Car', "brand":'brand', "model":'model', 
+				"plate_number_letters":"klj", "plate_number_numbers":"123",
+				"car_type": "1"}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
 			content_type="multipart/form-data")
@@ -364,14 +366,54 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(result.content_type, 'application/json')
 		self.assertEqual(result.status_code, 200)
 
-		# get the operation wuth country id filter
-		data = {'type_id':2}
+		# get the operation with object=Peron filter
+		data = {'object':"Person"}
 
 		result=self.client_app.get('/api/getoperation', query_string=data, content_type='application/json')
 		data = json.loads(result.data.decode())
 
 		self.assertTrue(data, 'no operations')
 		self.assertEqual(len(data['data']['operations']), 1)
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# get the operation with object=Car filter
+		data = {'object':"Car"}
+
+		result=self.client_app.get('/api/getoperation', query_string=data, content_type='application/json')
+		data = json.loads(result.data.decode())
+
+		self.assertTrue(data, 'no operations')
+		self.assertEqual(len(data['data']['operations']), 1)
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		# get the operation with wrong object filter
+		data = {'object':"wrong"}
+
+		result=self.client_app.get('/api/getoperation', query_string=data, content_type='application/json')
+		data = json.loads(result.data.decode())
+
+		self.assertTrue(data, 'no operations')
+		self.assertEqual(len(data['data']['operations']), 0)
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+		# get the operation with not exist data
+		data = {'id':"4"}
+
+		result=self.client_app.get('/api/getoperation', query_string=data, content_type='application/json')
+		data = json.loads(result.data.decode())
+
+		self.assertTrue(data, 'no operations')
+		self.assertEqual(len(data['data']['operations']), 0)
 		self.assertEqual(data['message'],  None)
 		self.assertEqual(data['status'], 'success')
 		self.assertEqual(result.content_type, 'application/json')
@@ -660,6 +702,50 @@ class TestOperationApi2(TestConfig):
 		
 		self.assertEqual(result.content_type, 'application/json')
 		self.assertEqual(result.status_code, 200)
+	"""
+	def test_addoperation7(self):
+		''' try add arabic data for the operation'''
+
+		# first log-in 
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+
+		# the user country
+		country = getCountry(phoneCode=20)
+
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 200)
+
+		token = data['data']['token']
+
+		from app.models import Age
+		age = Age.query.first()
+
+
+		# add new operation
+		headers = {'token':token}
+
+		data = {'date':'2020-11-15',
+				'type_id':1, 'country_id':'1',
+				'object_type':'Person', 'person_name':'مصطفى', 'gender':'male','age_id':age.id}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 201)
+	"""
 
 class TestOperationApi3(TestConfig):
 	

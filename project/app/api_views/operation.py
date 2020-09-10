@@ -361,7 +361,11 @@ def getOperationRoute():
 		
 		# success
 		result['status'] = status['success']
-		result['data']['operations'] = [operation.toDict() for operation in operations]
+		if operations:
+			result['data']['operations'] = [operation.toDict() for operation in operations]
+		else:
+			result['data']['operations'] = []
+
 		return make_response(jsonify(result), 200)
 
 @api.route('/updateoperationstatus', methods=['PUT'])
