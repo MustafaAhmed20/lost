@@ -20,6 +20,10 @@ class Car(db.Model):
 	# car model
 	model = db.Column(db.TEXT)
 
+	# if this car involved in an  accident - access by accident
+	accident_id = db.Column(db.Integer, db.ForeignKey('accident.id'))
+	
+
 	def toDict(self):
 		""" return dict representation of the object """
 		return {'id':self.id, 'type':self.type, 'brand':self.brand,'model':self.model,

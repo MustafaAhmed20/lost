@@ -11,6 +11,7 @@ from .operation import *
 from .person import *
 from .app import *
 from .car import *
+from .accident import *
 
 def defaultData(app, db):
 	""" the default data in the databas"""
@@ -45,8 +46,13 @@ def defaultData(app, db):
 	admin.users.append(admin_user)
 
 	# age
-	first_age = Age(min_age=1, max_age=10)
-	secound_age = Age(min_age=10, max_age=20)
+	first_age = Age(min_age=1, max_age=5)
+	second_age = Age(min_age=5, max_age=10)
+	third_age = Age(min_age=10, max_age=15)
+	fourth_age = Age(min_age=15, max_age=20)
+	fifth_age = Age(min_age=20, max_age=30)
+	sixth_age = Age(min_age=30, max_age=50)
+	last_age = Age(min_age=50, max_age=100)
 
 	db.session.add(sudan)
 	db.session.add(egypt)
@@ -66,7 +72,8 @@ def defaultData(app, db):
 	db.session.add(normal_user)
 	db.session.add(admin_user)
 	
-	db.session.add(first_age)
-	db.session.add(secound_age)
+	# add ages
+	db.session.add_all([first_age, second_age, third_age, fourth_age, fifth_age, sixth_age, last_age])
+	
 	db.session.commit()
 

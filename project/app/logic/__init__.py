@@ -59,14 +59,14 @@ def _addObjectCar(post_data):
 	brand = post_data.get('brand')
 	model = post_data.get('model')
 	plateNumberLetters = post_data.get('plate_number_letters')
-	plateNumberNunbers = post_data.get('plate_number_numbers')
+	plateNumberNumbers = post_data.get('plate_number_numbers')
 	type = post_data.get('car_type')
 
-	if not all([brand, model, plateNumberLetters, plateNumberNunbers, type]):
+	if not all([brand, model, plateNumberLetters, plateNumberNumbers, type]):
 		return False
 
 	# add car
-	car = addCar(type=type, plateNumberLetters=plateNumberLetters, plateNumberNumbers=plateNumberNunbers, 
+	car = addCar(type=type, plateNumberLetters=plateNumberLetters, plateNumberNumbers=plateNumberNumbers, 
 		brand=brand, model=model)
 	
 	if not car:

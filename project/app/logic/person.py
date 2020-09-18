@@ -2,7 +2,7 @@ from ..models import db, Person, Age, Photos
 import os
 
 # person model
-def addPerson(name, gender, ageId=None, skin=None):
+def addPerson(name, gender, ageId, skin=None):
 	""" add new Person 
 	return the new person object if added or false if failed"""
 

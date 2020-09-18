@@ -15,6 +15,10 @@ class Person(db.Model):
 	# skin color - range from (1 - 5)
 	skin = db.Column(db.Integer)
 
+	# if this person involved in an  accident - access by accident
+	accident_id = db.Column(db.Integer, db.ForeignKey('accident.id'))
+	
+
 	def toDict(self):
 		""" return dict representation of the object """
 		return {'id':self.id, 'name':self.name, 'age_id':self.age_id,

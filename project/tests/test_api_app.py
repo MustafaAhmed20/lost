@@ -36,7 +36,7 @@ class TestAppApi(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 200)
 
-		# with un spported version
+		# with un supported version
 
 		data = {'version': '0'}
 

@@ -1,5 +1,12 @@
+# Vs code sttings file
+.vscode/
+
+# environment variables
 .env
+
+# images
 project/app/static/imeges/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
