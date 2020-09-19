@@ -17,6 +17,6 @@ class Accident(db.Model):
 	# Persons involved in this accident
 	persons = db.relationship("Person", backref="accident", cascade = "all, delete, delete-orphan")
 
-	def toDict():
+	def toDict(self):
 		""" return dict representation of the object """
 		return {'id':self.id, 'cars':[i.toDict() for i in self.cars], 'persons':[i.toDict() for i in self.persons]}

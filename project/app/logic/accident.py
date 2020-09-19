@@ -3,7 +3,7 @@ from .person import deletePhoto
 
 
 # accident model
-def addAccident(cars =[], persons =[]):
+def addAccident(cars =None, persons =None):
 	''' add new Accident - return Accident object if success else False
 	perm: cars    = a List of car object
 	perm: persons = a List of person object'''
@@ -14,9 +14,11 @@ def addAccident(cars =[], persons =[]):
 	
 	try:
 		accident = Accident()
-		# add the cars and the persons	
-		accident.cars.extend(cars)
-		accident.persons.extend(persons)
+		# add the cars and the persons
+		if cars	:
+			accident.cars.extend(cars)
+		if persons:
+			accident.persons.extend(persons)
 		
 		db.session.add(accident)
 		db.session.commit()

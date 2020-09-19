@@ -1,4 +1,4 @@
-from . import api, current_app, jsonify, request, make_response, json
+from . import api, current_app, jsonify, request, make_response
 from . import status, baseApi, jwt, copy
 from . import adminRequired, loginRequired, loginActiveRequired, saveFile, MAX_IMEGES_NUMBER
 
@@ -7,7 +7,7 @@ from . import (addOperation, addCountry, getCountry, getStatus_operation, getTyp
 	getOperation, updateOperationStatus)
 from . import addPhoto
 from . import getUser
-# avilable Objects Types
+# available Objects Types
 from . import availableObjectsTypes, addObject, deleteObject
 
 import datetime
@@ -47,7 +47,6 @@ def addCountryRoute():
 	# success
 	result['status'] = status['success']
 	return make_response(jsonify(result), 201)
-
 
 @api.route('/getcountry', methods=['GET'])
 @api.route('/getcountry/<int:country_id>', methods=['GET'])
@@ -122,7 +121,6 @@ def getStatusOperationRoute(status_id=None):
 		result['status'] = status['success']
 		result['data']['status_operation'] = [c.toDict() for c in s]
 		return make_response(jsonify(result), 200)
-
 
 @api.route('/gettypeoperation', methods=['GET'])
 @api.route('/gettypeoperation/<int:type_id>', methods=['GET'])
@@ -308,7 +306,6 @@ def addOperationRoute():
 	# success
 	result['status'] = status['success']
 	return make_response(jsonify(result), 201)
-
 
 @api.route('/getoperation', methods=['GET'])
 def getOperationRoute():

@@ -1,7 +1,7 @@
 from ..models import db, Operations, Type_operation, Status_operation, Country, Users
 
 # import all the class that operation can use it as object
-from ..models import Person, Car
+from ..models import Person, Car, Accident
 
 # Country model
 def addCountry(name, phoneCode, phoneLength, isoName):
@@ -139,7 +139,7 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 	return operation
 
 def getOperation(**filters):
-	""" return the Operation object if filterd with id object or None if not exist. 
+	""" return the Operation object if filtered with id object or None if not exist. 
 		return a list of Operation objects with filters apply	
 		return a list of all Operations if no perm passed
 		raise value error if wrong filter passed
@@ -165,9 +165,11 @@ def getOperation(**filters):
 
 	for filter in filters:
 		if filter not in availableFilters:
-			#raise ValueError(f'not valid filter {filter}')
+			# ignore the wrong filters
 			pass
 		else:
+			# add the filter immediately if the filter is not list - this was a fix for server bug that pass the 
+			# string filter as a list of letters
 			allowedFilters[filter] = ''.join(filters[filter]) if type(filters[filter]) is list else filters[filter]
 
 	baseQuery = Operations.query
@@ -203,7 +205,7 @@ def updateOperationStatus(newStatus, operation=None, operationId=None):
 	''' update operation status - return true is success else false'''
 
 	if not operationId and not operation:
-		raise ValueError('operation object or operationId is requred')
+		raise ValueError('operation object or operationId is required')
 
 	# first get the operation
 	if operationId:

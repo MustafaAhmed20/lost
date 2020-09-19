@@ -84,11 +84,11 @@ class TestUserLogic2(TestConfig):
 		self.assertTrue(result, 'no Ages')
 		
 
-		result = getAge(minAge=1, maxAge=10)
+		result = getAge(minAge=1, maxAge=5)
 
 		self.assertTrue(result, 'no age with this perm')
 		self.assertEqual(result.min_age, 1)
-		self.assertEqual(result.max_age, 10)
+		self.assertEqual(result.max_age, 5)
 
 		result = getAge(id=1)
 
