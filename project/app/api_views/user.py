@@ -75,8 +75,30 @@ def loginUserRoute():
 @api.route('/checklogin', methods=['POST'])
 @loginRequired
 def checkLoginRoute():
-	''' this route just for checking the token if valid or not'''
+	''' this route just for checking the token if valid or not
+	in sake of keep the user logged-in return new token'''
 	result = copy.deepcopy(baseApi)
+
+	# get the user publicId form current token
+	token = request.headers.get('token')
+
+	try:
+		payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
+		userPublicId = payload['user']
+	except (jwt.ExpiredSignatureError, InvalidTokenError) as e:
+		result['status'] = status['failure']
+		result['message']  = 'Signature expired. Please log in again.'
+		return make_response(jsonify(result), 202)
+	except Exception as e:
+		raise e
+	
+	# generate new token
+	exp = datetime.datetime.utcnow() + datetime.timedelta(days =0+days ,minutes=0+minutes)
+	iat = datetime.datetime.utcnow()
+	token_data = {'user':userPublicId, 'exp':exp, 'iat':iat}
+	token = jwt.encode(token_data, current_app.config['SECRET_KEY'])
+
+	result['data']['token'] = token.decode()
 	result['status'] = status['success']
 	return make_response(jsonify(result), 200)
 

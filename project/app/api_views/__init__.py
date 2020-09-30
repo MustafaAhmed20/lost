@@ -17,7 +17,7 @@ from ..logic import *
 
 # the login token valid time
 minutes = 30
-days = 1
+days = 30
 
 api = Blueprint('api', __name__)
 

@@ -76,7 +76,7 @@ class TestUserApi(TestConfig):
 	def test_checkLogin(self):
 		''' tests the 'checklogin' route '''
 
-		# post requset
+		# post request
 		result = self.client_app.post("/api/checklogin", content_type='application/json')
 
 		data = json.loads(result.data.decode())
@@ -97,7 +97,7 @@ class TestUserApi(TestConfig):
 
 		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
 		
-		# post requset
+		# post request
 		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
 
 		data = json.loads(result.data.decode())
@@ -116,6 +116,10 @@ class TestUserApi(TestConfig):
 
 		self.assertEqual(data['status'], 'success')
 		self.assertEqual(result.status_code, 200)
+
+		# new user token
+		token  = data['data'].get('token')
+		self.assertTrue(token, 'no new token returned')
 
 
 
