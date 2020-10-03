@@ -51,7 +51,8 @@ class Operations(db.Model):
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.id, 'date':self.date.strftime ('%Y-%m-%d'),
+		return {'id':self.id,
+				'date':self.date.strftime ('%Y-%m-%d'), 'add_date':self.add_date.strftime('%Y-%m-%d %H:%M:%S'),
 				'object_type':self.object.__name__, 'object':self.object.toDict(),
 				'country_id':self.country_id,
 				'type_id':self.type_id, 'status_id':self.status_id,
