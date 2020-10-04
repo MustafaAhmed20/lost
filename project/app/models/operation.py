@@ -12,7 +12,7 @@ class Operations(db.Model):
 	id = db.Column(db.Integer, primary_key=True)
 
 	# date and time of add to the system
-	add_date = db.Column(db.DATETIME, default=datetime.datetime.now())
+	add_date = db.Column(db.DATETIME(timezone=True), default=datetime.datetime.utcnow)
 
 	# date of operation (lost or found)
 	date = db.Column(db.DATE, nullable=False)
@@ -52,7 +52,8 @@ class Operations(db.Model):
 	def toDict(self):
 		""" return dict representation of the object """
 		return {'id':self.id,
-				'date':self.date.strftime ('%Y-%m-%d'), 'add_date':self.add_date.strftime('%Y-%m-%d %H:%M:%S'),
+				'date':self.date.strftime ('%Y-%m-%d'),
+				'add_date':self.add_date.replace(tzinfo=datetime.timezone.utc).strftime('%Y-%m-%d %H:%M:%S %z'),
 				'object_type':self.object.__name__, 'object':self.object.toDict(),
 				'country_id':self.country_id,
 				'type_id':self.type_id, 'status_id':self.status_id,

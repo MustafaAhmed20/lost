@@ -65,4 +65,4 @@ class UserVerificationNumber(db.Model):
 
 	code =  db.Column(db.String(10), nullable=False, unique=True)
 
-	create_date = db.Column(db.DATETIME, default=datetime.datetime.now())
+	create_date = db.Column(db.DATETIME, default=datetime.datetime.utcnow)
