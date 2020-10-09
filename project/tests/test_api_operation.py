@@ -453,7 +453,7 @@ class TestOperationApi2(TestConfig):
 		data = {'date':'2020-11-15',
 				'type_id':1, 'country_id':'1',
 				'object_type':'Person', 'person_name':'mustafa', 'age_id':age.id,
-				'details': 'this long paragraph of details', 'gender':'male', 'skin':2,
+				'details': 'this long paragraph of details', 'gender':'male', 'skin':2, 'shelter':True,
 				'lat':lat, 'lng':lng}
 
 		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
@@ -481,6 +481,7 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(data['data']['operations'][0]['lat'], lat, 'no lat')
 		self.assertEqual(data['data']['operations'][0]['lng'], lng, 'no lng')
 		self.assertEqual(data['data']['operations'][0]['object']['skin'], 2, 'no skin')
+		self.assertEqual(data['data']['operations'][0]['object']['shelter'], True, 'no shelter')
 		self.assertEqual(data['data']['operations'][0]['object']['age_id'], age.id, 'not same age')
 		self.assertEqual(data['data']['operations'][0]['user']['name'], 'admin', 'no user')
 		

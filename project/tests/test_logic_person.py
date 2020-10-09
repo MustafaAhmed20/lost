@@ -8,13 +8,14 @@ class TestUserLogic(TestConfig):
 	def test_addPerson(self):
 		'''add new person'''
 		age = getAge()[0]
-		result = addPerson(name='mustafa', gender='male', ageId=age.id, skin=2)
+		result = addPerson(name='mustafa', gender='male', ageId=age.id, skin=2, shelter=True)
 
 		person = Person.query.filter_by(name='mustafa').first()
 
 		self.assertTrue(person, 'add person Failed')
 		self.assertEqual(result.name, 'mustafa', 'add person Failed')
 		self.assertEqual(person.skin, 2, 'not same skin')
+		self.assertEqual(person.shelter, True, 'not same shelter')
 
 	def test_addAge(self):
 		'''add new age'''

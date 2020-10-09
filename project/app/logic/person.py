@@ -2,7 +2,7 @@ from ..models import db, Person, Age, Photos
 import os
 
 # person model
-def addPerson(name, gender, ageId, skin=None):
+def addPerson(name, gender, ageId, skin=None, shelter=None):
 	""" add new Person 
 	return the new person object if added or false if failed"""
 
@@ -12,9 +12,13 @@ def addPerson(name, gender, ageId, skin=None):
 		gender = True
 	else:
 		gender = False
+	
+	if shelter and not type(shelter) == bool:
+		raise ValueError('shelter must be bool')
+
 
 	try:
-		person = Person(name=name, gender=gender, skin=skin)
+		person = Person(name=name, gender=gender, skin=skin, shelter=shelter)
 
 		if ageId:
 			age = Age.query.get(ageId)

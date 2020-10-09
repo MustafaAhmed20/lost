@@ -12,6 +12,9 @@ class Person(db.Model):
 	# gender if the person
 	gender = db.Column(db.Boolean, nullable=False)
 
+	# if this person now is resident in shelter or some special place
+	shelter = db.Column(db.Boolean, default=False)
+
 	# skin color - range from (1 - 5)
 	skin = db.Column(db.Integer)
 
@@ -23,7 +26,7 @@ class Person(db.Model):
 		""" return dict representation of the object """
 		return {'id':self.id, 'name':self.name, 'age_id':self.age_id,
 				'gender': 'male' if self.gender else 'female',
-				'skin':self.skin}
+				'skin':self.skin, 'shelter':self.shelter}
 
 class Age(db.Model):
 	"""This table represents the age ranges for persons"""

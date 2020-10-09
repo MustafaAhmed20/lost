@@ -52,12 +52,20 @@ def _addObjectPerson(post_data):
 	gender = post_data.get('gender')
 	skin = post_data.get('skin')
 	age_id = post_data.get('age_id')
+	shelter = post_data.get('shelter')
 
 	if not age_id or not gender:
 		return False
+	
+	# the shelter must be a bool
+	try:
+		if shelter:
+			shelter = bool(shelter)
+	except expression as identifier:
+		return False
 
 	# add person
-	person = addPerson(name=personName, ageId=age_id, gender=gender, skin=skin)
+	person = addPerson(name=personName, ageId=age_id, gender=gender, skin=skin, shelter=shelter)
 	if not person:
 		return False
 
