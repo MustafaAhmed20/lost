@@ -17,7 +17,7 @@ def addCar(type, plateNumberLetters, plateNumberNumbers, brand, model):
 def getCar(id=None, type=None, plateNumberLetters=None, plateNumberNumbers=None):
 	""" return the Car object or None if not exist
 		return a list of all Cars if no filters passed.
-		return one object if filterd by 'id' or  plateNumber"""
+		return one object if filtered by 'id' or  plateNumber"""
 
 	if id:
 		return Car.query.get(id)
@@ -51,7 +51,7 @@ def deleteCar(id=None, object=None):
 	# delete the photos
 	deletePhoto(car)
 
-	# delete the person
+	# delete the car
 	db.session.delete(car)
 
 	db.session.commit()	

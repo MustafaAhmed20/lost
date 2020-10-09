@@ -2,11 +2,12 @@
 from .person import addPerson, deletePerson
 from .car import addCar, deleteCar
 from .accident import addAccident, deleteAccident
+from .personal_belongings import addPersonalBelongings, deletePersonalBelongings
 
 import json
 
 # this contain the available objects types
-availableObjectsTypes = ['Person', 'Car', 'Accident']
+availableObjectsTypes = ['Person', 'Car', 'Accident', 'PersonalBelongings']
 
 def addObject(objectName, post_data):
 	# check if its valid object
@@ -20,10 +21,14 @@ def addObject(objectName, post_data):
 	if objectName == availableObjectsTypes[1]:
 		# car
 		return _addObjectCar(post_data)
-	
+
 	if objectName == availableObjectsTypes[2]:
 		# Accident
 		return _addObjectAccident(post_data)
+
+	if objectName == availableObjectsTypes[3]:
+		# PersonalBelongings
+		return _addObjectPersonalBelongings(post_data)
 
 def deleteObject(objectName, object):
 	# check if its valid object
@@ -41,6 +46,10 @@ def deleteObject(objectName, object):
 	if objectName == availableObjectsTypes[2]:
 		# Accident
 		return _deleteObjectAccident(object)
+	
+	if objectName == availableObjectsTypes[3]:
+		# PersonalBelongings
+		return _deleteObjectPersonalBelongings(object)
 
 
 # helper functions to add objects
@@ -149,6 +158,24 @@ def _addObjectAccident(post_data):
 	# now add the Accident
 	return addAccident(cars =carObjects, persons =personObjects)
 
+def _addObjectPersonalBelongings(post_data):
+	""" get the 'PersonalBelongings data. return False if failed. 
+		return the 'PersonalBelongings object if added"""
+
+	type = post_data.get('personal_belongings_type')
+	subtype = post_data.get('personal_belongings_subtype')
+
+	if not type:
+		return False
+
+	# add 'PersonalBelongings'
+	object = addPersonalBelongings(type=type, subtype=subtype)
+	
+	if not object:
+		return False
+
+	return object
+
 # helper functions to delete objects
 def _deleteObjectPerson(object):
 	''' delete object'''
@@ -164,3 +191,8 @@ def _deleteObjectAccident(object):
 	''' delete object'''
 
 	return deleteAccident(object=object)
+
+def _deleteObjectPersonalBelongings(object):
+	''' delete object'''
+
+	return deletePersonalBelongings(object=object)
