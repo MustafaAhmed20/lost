@@ -490,6 +490,41 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(result.content_type, 'application/json')
 		self.assertEqual(result.status_code, 200)
 
+
+		# try add with shelter is False or witout shelter
+		#
+		
+		data = {'date':'2020-11-15',
+				'type_id':1, 'country_id':'1',
+				'object_type':'Person', 'person_name':'mustafa', 'age_id':age.id,
+				'details': 'this long paragraph of details', 'gender':'male', 'skin':2, 'shelter':False,
+				'lat':lat, 'lng':lng}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 201)
+		data = {'date':'2020-11-15',
+				'type_id':1, 'country_id':'1',
+				'object_type':'Person', 'person_name':'mustafa', 'age_id':age.id,
+				'details': 'this long paragraph of details', 'gender':'male', 'skin':2,
+				'lat':lat, 'lng':lng}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 201)
+
 	def test_addoperation4(self):
 		''' add new user then add operation with it'''
 
@@ -882,8 +917,8 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(data['status'], 'success')
 
 
-		self.assertEqual(data['data']['operations'][0]['object']['type'], 1)
-		self.assertEqual(data['data']['operations'][0]['object']['subtype'], 2)
+		self.assertEqual(data['data']['operations'][0]['object']['personal_belongings_type'], 1)
+		self.assertEqual(data['data']['operations'][0]['object']['personal_belongings_subtype'], 2)
 
 	
 		self.assertEqual(result.content_type, 'application/json')

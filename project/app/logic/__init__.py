@@ -67,11 +67,10 @@ def _addObjectPerson(post_data):
 		return False
 	
 	# the shelter must be a bool
-	try:
-		if shelter:
-			shelter = bool(shelter)
-	except expression as identifier:
-		return False
+	if not shelter:
+		shelter = False
+	else:
+		shelter = True
 
 	# add person
 	person = addPerson(name=personName, ageId=age_id, gender=gender, skin=skin, shelter=shelter)

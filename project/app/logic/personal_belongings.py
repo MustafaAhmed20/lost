@@ -9,7 +9,7 @@ def addPersonalBelongings(type, subtype):
 		object = PersonalBelongings(type=type, subtype=subtype)
 		db.session.add(object)
 		db.session.commit()
-	except expression as identifier:
+	except Exception as e:
 		return False
 
 	return object

@@ -10,8 +10,8 @@ class PersonalBelongings(db.Model):
 	type = db.Column(db.Integer, nullable=False)
 
 	# some types have subtype
-	subtype = db.Column(db.Integer, nullable=False)
+	subtype = db.Column(db.Integer)
 
 	def toDict(self):
 		""" return dict representation of the object """
-		return {'id':self.id, 'type':self.type, 'subtype':self.subtype}
+		return {'id':self.id, 'personal_belongings_type':self.type, 'personal_belongings_subtype':self.subtype}
