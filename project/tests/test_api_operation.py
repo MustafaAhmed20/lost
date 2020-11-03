@@ -276,6 +276,42 @@ class TestOperationApi2(TestConfig):
 		# no photos after delete
 		self.assertEqual(len(getPohto()), 0, 'photos not deleted')
 
+
+		# get new token with auto generate and then try add new operation
+		#
+
+		headers = {'token':token}
+		
+		# check login again - generate token
+		result = self.client_app.post("/api/checklogin", headers=headers, content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 200)
+
+		# new user token
+		newtoken  = data['data'].get('token')
+		self.assertTrue(token, 'no new token returned')
+		headers = {'token':newtoken}
+
+		# now add new operation
+		#
+		data = {'date':'2020-11-15',
+				'type_id':2, 'country_id':1,
+				'object_type':'Person', 'person_name':'mustafa', 'gender':'male', 'age_id':age.id}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 201)
+
 	def test_addoperation2(self):
 		""" add operations then get it """
 
