@@ -13,6 +13,7 @@ from ..logic.user import *
 from ..logic.person import *
 from ..logic.operation import *
 from ..logic.app import *
+from ..logic.comment import *
 from ..logic import *
 
 # the login token valid time
@@ -172,3 +173,4 @@ from .user import *
 from .person import *
 from .operation import *
 from .app import *
+from .comment import *

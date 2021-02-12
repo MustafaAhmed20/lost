@@ -52,7 +52,7 @@ def checkVersionRoute():
 @adminRequired
 def getfeedbackRoute():
 	''' get the feedback - admin only
-		this route use POST method becouse it may contain login data'''
+		this route use POST method because it may contain login data'''
 	
 	# the returned response
 	result = copy.deepcopy(baseApi)

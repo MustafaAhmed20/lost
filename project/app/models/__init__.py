@@ -13,6 +13,7 @@ from .app import *
 from .car import *
 from .accident import *
 from .personal_belongings import *
+from .comment import *
 
 def defaultData(app, db):
 	""" the default data in the databas"""

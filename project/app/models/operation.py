@@ -49,6 +49,9 @@ class Operations(db.Model):
 	# country of the operation
 	country_id = db.Column(db.Integer,  db.ForeignKey('country.id'), nullable=False)
 
+	# the comments of this operation
+	comments = db.relationship('Comment', lazy='dynamic')
+
 	def toDict(self):
 		""" return dict representation of the object """
 		return {'id':self.id,

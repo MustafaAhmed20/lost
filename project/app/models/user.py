@@ -19,6 +19,9 @@ class Users(db.Model):
 	# the operations this user created
 	operations = db.relationship('Operations', backref='user', lazy='dynamic')
 
+	# the comments made by this user
+	comments = db.relationship('Comment', lazy='dynamic')
+
 	def toDict(self):
 		""" return dict representation of the object """
 		return {'id':self.public_id, 'name':self.name, 'phone':self.phone, 'permission':self.permission_id,\
