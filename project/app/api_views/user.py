@@ -62,7 +62,7 @@ def loginUserRoute():
 
 		token = jwt.encode(token_data, current_app.config['SECRET_KEY'])
 
-		result['data']['token'] = token.decode()
+		result['data']['token'] = token
 		result['status'] = status['success']
 		return make_response(jsonify(result), 200)
 
@@ -98,7 +98,7 @@ def checkLoginRoute():
 	token_data = {'user':userPublicId, 'exp':exp, 'iat':iat}
 	token = jwt.encode(token_data, current_app.config['SECRET_KEY'])
 
-	result['data']['token'] = token.decode()
+	result['data']['token'] = token
 	result['status'] = status['success']
 	return make_response(jsonify(result), 200)
 
@@ -307,7 +307,7 @@ def registerUserRoute():
 
 	# success
 	result['status'] = status['success']
-	result['data']['token'] = token.decode()
+	result['data']['token'] = token
 	return make_response(jsonify(result), 201)
 
 @api.route('/conformuserphone', methods=['POST'])
