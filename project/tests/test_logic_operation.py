@@ -322,3 +322,9 @@ class TestOperationLogic3(TestConfig):
 		# now check the opration status
 		self.assertEqual(operation.status.name, newStatus.name, 'operatuin status not changed')
 
+		# the operatoin in the new status
+		self.assertIn(operation, newStatus.operations, 'new operation not in the new status')
+
+		# not the old status
+		self.assertNotIn(operation, status.operations, 'old status not changed')
+

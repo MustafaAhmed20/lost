@@ -1014,9 +1014,20 @@ class TestOperationApi3(TestConfig):
 
 		data = json.loads(result.data.decode())
 
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['operations'])
+		self.assertTrue(data['data']['operations'][0])
+
 		operation = data['data']['operations'][0]
 
 		
+		# **************************
 		# now update status to closed
 		data = {'status':'closed', 'operationid':operation['id']}
 
@@ -1030,3 +1041,20 @@ class TestOperationApi3(TestConfig):
 		self.assertEqual(data['status'], 'success')
 		self.assertEqual(result.content_type, 'application/json')
 		self.assertEqual(result.status_code, 200)
+
+
+		# *********************
+		# try get the operations 
+		
+		result = self.client_app.get("/api/getoperation", content_type="multipart/form-data")
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertFalse(data['data']['operations'])
+
