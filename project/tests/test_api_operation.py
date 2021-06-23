@@ -942,10 +942,13 @@ class TestOperationApi2(TestConfig):
 		# try get the data
 		#
 
-		data = {'object':'PersonalBelongings'}
+		data = {'object':'PersonalBelongings', 'date':'2020-11-15'}
 
 		result=self.client_app.get('/api/getoperation', query_string=data, content_type='application/json')
 		data = json.loads(result.data.decode())
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
 
 
 		self.assertTrue(data['data']['operations'])
@@ -957,8 +960,7 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(data['data']['operations'][0]['object']['personal_belongings_subtype'], 2)
 
 	
-		self.assertEqual(result.content_type, 'application/json')
-		self.assertEqual(result.status_code, 200)
+		
 
 class TestOperationApi3(TestConfig):
 	

@@ -343,7 +343,7 @@ def getOperationRoute():
 		if 'date' in filters:
 			# make sure the date have the rigth fromat
 			try:
-				filters['date'] = datetime.datetime.strptime(date, '%Y-%m-%d')
+				date = datetime.datetime.strptime(filters['date'], '%Y-%m-%d')
 			except Exception as e:
 				result['status'] = status['failure']
 				result['message']  = 'wrong date format. date must be in %Y-%m-%d fomat'
