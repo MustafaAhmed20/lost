@@ -1,6 +1,6 @@
 from . import api, current_app, jsonify, request, make_response
 from . import status, baseApi, jwt, copy
-from . import adminRequired, loginRequired, loginActiveRequired, saveFile, MAX_IMEGES_NUMBER
+from . import adminRequired, loginRequired, loginActiveRequired, saveFile, MAX_IMEGES_NUMBER, isAdmin
 
 # the logic
 from . import (addOperation, addCountry, getCountry, getStatus_operation, getType_operation, 
@@ -307,64 +307,6 @@ def addOperationRoute():
 	result['status'] = status['success']
 	return make_response(jsonify(result), 201)
 
-@api.route('/getoperation', methods=['GET'])
-def getOperationRoute():
-	""" get a list of operations"""
-	result = copy.deepcopy(baseApi)
-	#filters = request.view_args
-	filters = request.args
-	if not filters:
-		# no filters
-		try:
-			operations = getOperation()	
-		except Exception as e:
-			result['status'] = status['failure']
-			result['message'] = 'Some error occurred. Please try again'
-			return make_response(jsonify(result), 401)
-
-		# success
-		result['status'] = status['success']
-		result['data']['operations'] = [operation.toDict() for operation in operations]
-		return make_response(jsonify(result), 200)
-
-	else:
-		# with filters
-		if 'user' in filters:
-			user = getUser(userPublicId=filters['user'])
-			
-			if not user:
-				result['status'] = status['failure']
-				result['message'] = "not valid filter 'user'"
-				return make_response(jsonify(result), 400)
-
-			filters['user_id'] = user.id
-			del filters['user']
-
-		if 'date' in filters:
-			# make sure the date have the rigth fromat
-			try:
-				date = datetime.datetime.strptime(filters['date'], '%Y-%m-%d')
-			except Exception as e:
-				result['status'] = status['failure']
-				result['message']  = 'wrong date format. date must be in %Y-%m-%d fomat'
-				return make_response(jsonify(result), 400)
-
-		try:
-			operations = getOperation(**filters)
-		except Exception as e:
-			result['status'] = status['failure']
-			result['message']  = e
-			return make_response(jsonify(result), 400)
-		
-		# success
-		result['status'] = status['success']
-		if operations:
-			result['data']['operations'] = [operation.toDict() for operation in operations]
-		else:
-			result['data']['operations'] = []
-
-		return make_response(jsonify(result), 200)
-
 @api.route('/updateoperationstatus', methods=['PUT'])
 @loginActiveRequired
 def updateOperationStatusRoute():
@@ -426,4 +368,77 @@ def updateOperationStatusRoute():
 
 	# success
 	result['status'] = status['success']
+	return make_response(jsonify(result), 200)
+
+
+
+# ****************************************
+# ******* get operation functions ********
+# ****************************************
+
+@api.route('/getoperation', methods=['GET'])
+def getOperationRoute():
+	""" get a list of operations"""
+
+	result = copy.deepcopy(baseApi)
+	filters = request.args
+
+	if not filters:
+		filters = dict()
+	else:
+		filters = dict(filters)
+
+	
+	# the status - if admin only (can browse the statuses)
+	if 'status' in filters and isAdmin():
+		statusOperation = getStatus_operation(name = filters['status'])
+		if not statusOperation:
+			result['status'] = status['failure']
+			result['message'] = "not valid filter 'status'"
+			return make_response(jsonify(result), 400)
+		
+		filters['status_id'] = statusOperation.id
+		del filters['status']
+	else :
+		# active status only
+		statusOperation = getStatus_operation(name = 'active')
+		if statusOperation:
+			filters['status_id'] = statusOperation.id
+
+	
+	# with filters
+	if 'user' in filters:
+		user = getUser(userPublicId=filters['user'])
+
+		if not user:
+			result['status'] = status['failure']
+			result['message'] = "not valid filter 'user'"
+			return make_response(jsonify(result), 400)
+
+		filters['user_id'] = user.id
+		del filters['user']
+
+	if 'date' in filters:
+		# make sure the date have the rigth fromat
+		try:
+			datetime.datetime.strptime(filters['date'], '%Y-%m-%d')
+		except Exception as e:
+			result['status'] = status['failure']
+			result['message']  = r'wrong date format. date must be in %Y-%m-%d format'
+			return make_response(jsonify(result), 400)
+
+	try:
+		operations = getOperation(**filters)
+	except Exception as e:
+		result['status'] = status['failure']
+		result['message']  = e
+		return make_response(jsonify(result), 400)
+
+	# success
+	result['status'] = status['success']
+	if operations:
+		result['data']['operations'] = [operation.toDict() for operation in operations]
+	else:
+		result['data']['operations'] = []
+
 	return make_response(jsonify(result), 200)

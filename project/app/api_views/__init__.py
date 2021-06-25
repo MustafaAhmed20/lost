@@ -28,6 +28,32 @@ status = {'failure':'failure', 'success':'success'}
 MAX_IMEGES_NUMBER = 5
 ALLOWED_EXTENSIONS = ['jpg', 'png', 'jpeg']
 
+def isAdmin() -> bool:
+	# get the tkoken
+	token = request.headers.get('token')
+
+	if not token:
+		return False
+
+	try:
+		payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
+		userPublicId = payload['user']
+	except jwt.ExpiredSignatureError :
+		return False
+	except jwt.InvalidTokenError:
+		return False
+
+
+	user = getUser(publicId=userPublicId)
+
+	if not user:
+		return False
+
+	if not user.permission.name == 'admin':
+		return False
+
+	return True
+
 def adminRequired(f):
 	@wraps(f)
 	def mustAdmin(*args, **kwargs):

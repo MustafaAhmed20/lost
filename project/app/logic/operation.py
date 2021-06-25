@@ -140,20 +140,20 @@ def addOperation(country, object, userPublicId, date, type=None, status=None, la
 
 def getOperation(**filters):
 	""" return the Operation object if filtered with id object or None if not exist. 
-		return a list of Operation objects with filters apply	
-		return a list of all Operations if no perm passed
-		raise value error if wrong filter passed
+		return a list of Operations objects with filters apply	
+		return a list of all Operations if no filters passed
+		ignore all not valid filters
 		
 		filters :
 		id 			:Operation id
 		country_id	:country id of the  
 		object 		:object type of the Operation
 		user_id 	:user id who responsible of the Operation
-		date 		: date of the Operation
+		date 		:date of the Operation
 
-	 	add_date 	:add to system date
+	 	add_date 	:add-to-system date
 	 	type_id		:type id of the Operation
-	 	status_id	:status of the Operation
+	 	status_id	:status id of the Operation
 	 	lat 		:lat of the Operation
 	 	lng			:lng of the Operation
 		"""
@@ -172,7 +172,9 @@ def getOperation(**filters):
 			# string filter as a list of letters
 			allowedFilters[filter] = ''.join(filters[filter]) if type(filters[filter]) is list else filters[filter]
 
+
 	baseQuery = Operations.query
+	
 	if not allowedFilters:
 		return baseQuery.all()
 
@@ -197,9 +199,11 @@ def getOperation(**filters):
 		if 'lng' in allowedFilters:
 			allowedFilters['lng'] = float(allowedFilters['lng'])
 	except Exception as e:
-		raise e
+		del allowedFilters['lat']
+		del allowedFilters['lng']
+		pass
 
-	return baseQuery.filter_by(**allowedFilters).filter_by(status_id=Status_operation.query.filter_by(name='active').first().id).all()
+	return baseQuery.filter_by(**allowedFilters).all()
 
 def updateOperationStatus(newStatus, operation=None, operationId=None):
 	''' update operation status - return true is success else false'''

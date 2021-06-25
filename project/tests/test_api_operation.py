@@ -1,6 +1,6 @@
 from . import TestConfig
 from app.api_views.operation import *
-from app.logic.operation import getCountry
+from app.logic.operation import getCountry, getOperation
 from app.logic.person import getPerson, getPohto, deletePerson
 
 
@@ -959,9 +959,6 @@ class TestOperationApi2(TestConfig):
 		self.assertEqual(data['data']['operations'][0]['object']['personal_belongings_type'], 1)
 		self.assertEqual(data['data']['operations'][0]['object']['personal_belongings_subtype'], 2)
 
-	
-		
-
 class TestOperationApi3(TestConfig):
 	
 	def test_updateoperationStatus(self):
@@ -1044,7 +1041,7 @@ class TestOperationApi3(TestConfig):
 
 
 		# *********************
-		# try get the operations 
+		# try get the operations with api
 		
 		result = self.client_app.get("/api/getoperation", content_type="multipart/form-data")
 
@@ -1058,3 +1055,23 @@ class TestOperationApi3(TestConfig):
 		self.assertEqual(data['status'], 'success')
 		self.assertFalse(data['data']['operations'])
 
+
+		
+		
+		# *********************************
+		# try get the operayion that closed
+
+		data = {'status':'closed'}
+
+		result = self.client_app.get("/api/getoperation", query_string=data, headers=headers, content_type="multipart/form-data")
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['operations'])
+		self.assertEqual(len(data['data']['operations']), 1)
