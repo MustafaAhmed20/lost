@@ -442,3 +442,52 @@ def getOperationRoute():
 		result['data']['operations'] = []
 
 	return make_response(jsonify(result), 200)
+
+@api.route('/getmyoperations', methods=['GET'])
+@loginActiveRequired
+def getMyOperationRoute():
+	""" get a list of operations for the logged-in user """
+
+	result = copy.deepcopy(baseApi)
+
+
+	# get the user who want to get the operations
+	token = request.headers.get('token')
+	try:
+		payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
+		userPublicId = payload['user']
+	except jwt.ExpiredSignatureError :
+		result['status'] = status['failure']
+		result['message']  = 'Signature expired. Please log in again.'
+		return make_response(jsonify(result), 202)
+	except jwt.InvalidTokenError:
+		result['status'] = status['failure']
+		result['message']  ='Invalid token. Please log in again.'
+		return make_response(jsonify(result), 202)
+
+	# get the user
+	user = getUser(publicId=userPublicId)
+	if not user:
+		result['status'] = status['failure']
+		result['message'] = 'Some error occurred. Please try again'
+		return make_response(jsonify(result), 401)
+
+
+	# get the operations
+	try:
+		operations = getOperation(user_id=user.id)
+	except Exception as e:
+		result['status'] = status['failure']
+		result['message']  = e
+		return make_response(jsonify(result), 400)
+
+	# success
+	result['status'] = status['success']
+	if operations:
+		result['data']['operations'] = [operation.toDict() for operation in operations]
+	else:
+		result['data']['operations'] = []
+
+	return make_response(jsonify(result), 200)
+
+

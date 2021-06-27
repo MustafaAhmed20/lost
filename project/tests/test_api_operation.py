@@ -1075,3 +1075,189 @@ class TestOperationApi3(TestConfig):
 		self.assertEqual(data['status'], 'success')
 		self.assertTrue(data['data']['operations'])
 		self.assertEqual(len(data['data']['operations']), 1)
+
+	def test_getmyoperation(self):
+		'''tests the 'get my operation' status route'''
+
+		# first log-in
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+
+		# the user country
+		country = getCountry(phoneCode=20)
+		
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id}
+	
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		
+
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.status_code, 200)
+
+		token = data['data']['token']
+
+		from app.models import Age
+		age = Age.query.first()
+
+
+		# add new operation
+		headers = {'token':token}
+		
+		data = {'date':'2020-11-15',
+				'type_id':2, 'country_id':1,
+				'object_type':'Person', 'person_name':'mustafa', 'gender':'male', 'age_id':age.id}
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 201)
+
+
+		# add secound operation
+
+		data = {'date':'2021-01-15',
+				'type_id':2, 'country_id':1,
+				'object_type':'Person', 'person_name':'mustafa2', 'gender':'male', 'age_id':age.id}
+
+
+		result = self.client_app.post("/api/addoperation", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 201)
+
+
+		# ***************************************
+		# get the operation by my operation route
+
+		result = self.client_app.get("/api/getmyoperations", headers=headers,
+			content_type="multipart/form-data")
+		
+
+		data = json.loads(result.data.decode())
+
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['operations'])
+		self.assertEqual(len(data['data']['operations']), 2, 'wrong length of operations')
+
+		
+		#
+		# change the last operation to closed
+
+		operation = data['data']['operations'][0]
+
+		data = {'status':'closed', 'operationid':operation['id']}
+
+		result = self.client_app.put("/api/updateoperationstatus", data=data, headers=headers,\
+			content_type="multipart/form-data")
+
+		
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		#
+		# check the 'my operations' again
+		result = self.client_app.get("/api/getmyoperations", headers=headers,
+			content_type="multipart/form-data")
+		
+
+		data = json.loads(result.data.decode())
+
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['operations'])
+		self.assertEqual(len(data['data']['operations']), 2, 'wrong length of operations')
+
+
+		# ****************************************
+		# loggin with defrent account
+		# ****************************************
+
+		userData = {'name':'mustafa', 'phone':'0123456789', 'password':'12334a',
+					 'status':'active', 'permission':'user', 'country_id':country.id}
+
+
+		result = self.client_app.post("/api/adduser", data=json.dumps(userData),
+									 headers=headers,content_type='application/json')
+
+		data = json.loads(result.data.decode())
+		
+		self.assertEqual(data['status'], 'success')		
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 201)
+
+		# login with the new user
+		normalUserData = {'phone':'0123456789', 'password':'12334a', 'country_id':country.id}
+		noremalUserResult = self.client_app.post("/api/login", data=json.dumps(normalUserData), content_type='application/json')
+
+		normalUser = json.loads(noremalUserResult.data.decode())
+
+		normalUserToken = normalUser['data']['token']
+
+
+		self.assertEqual(normalUser['status'], 'success')
+		self.assertEqual(noremalUserResult.status_code, 200)
+
+		
+		# try get 'my operations with the new user'
+		result = self.client_app.get("/api/getmyoperations", headers={'token':normalUserToken},
+			content_type="multipart/form-data")
+		
+
+		data = json.loads(result.data.decode())
+
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertFalse(data['data']['operations'], 'there operations returned')
+		self.assertEqual(len(data['data']['operations']), 0, 'wrong length of operations')
+
+
+		# check the normal 'get operation' route - must get one operation
+		result = self.client_app.get("/api/getoperation", content_type="multipart/form-data")
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(result.content_type, 'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		self.assertEqual(data['message'],  None)
+		self.assertEqual(data['status'], 'success')
+		self.assertTrue(data['data']['operations'])
+		self.assertEqual(len(data['data']['operations']), 1, 'wrong length of operations')
+
