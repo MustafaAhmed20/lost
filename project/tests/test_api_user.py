@@ -121,9 +121,6 @@ class TestUserApi(TestConfig):
 		token  = data['data'].get('token')
 		self.assertTrue(token, 'no new token returned')
 
-
-
-
 class TestUserApi2(TestConfig):
 	""" tests the add user """
 
@@ -170,6 +167,25 @@ class TestUserApi2(TestConfig):
 		self.assertEqual(data['message'],  None)
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 201)
+
+		#
+		# login with device id enabled
+
+		country = getCountry(phoneCode=20)
+
+
+		data = {'phone':admin_phone, 'password':admin_password, 'country_id':country.id, 'device_id':'testDeviceId'}
+		
+		# post requset
+		resultAdmin = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(resultAdmin.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(resultAdmin.content_type,  'application/json')
+		self.assertEqual(resultAdmin.status_code, 200)
 
 	def test_addUser2(self):
 		""" login with admin then add user , then try add user with normal user"""
@@ -605,7 +621,7 @@ class TestUserApi4(TestConfig):
 		self.assertEqual(data['message'], 'no user with this phone')
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 202)
-
+	
 	def test_resetPassword(self):
 		''' test the 'resetPassword' route '''
 
@@ -634,6 +650,7 @@ class TestUserApi4(TestConfig):
 		# now check with the resetPassword route (withot the new password)
 
 		data = {'phone':admin_phone, 'country_id':country.id, 'code':code.code}
+
 		# post requset
 		result = self.client_app.post("/api/resetpassword", data=json.dumps(data), content_type='application/json')
 
@@ -660,7 +677,7 @@ class TestUserApi4(TestConfig):
 		self.assertEqual(result.status_code, 200)
 
 
-		# now check agin - must failed becouse the code get deleted
+		# now check agin - must failed because the code get deleted
 
 		data = {'phone':admin_phone, 'country_id':country.id, 'code':code.code, 'password':'newpassword123'}
 		# post requset
@@ -674,6 +691,76 @@ class TestUserApi4(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 202)
 
+	def test_resetPassword2(self):
+		"""try reset the password with device"""
+
+		testDeviceId = 'testDeviceId'
+		
+		country = getCountry(phoneCode=20)
+		admin_phone = os.getenv('admin_phone')
+		admin_password = os.getenv('admin_pass')
+
+
+		data = {'phone':admin_phone, 'country_id':country.id, 'password':admin_password, 'device_id':testDeviceId}
+
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		#
+		# now try reset the password
+
+		data = {'phone':admin_phone, 'country_id':country.id, 'code':'000000', 'password':'newpassword123', 'device_id':testDeviceId}
+		
+		# post requset
+		result = self.client_app.post("/api/resetpassword", data=json.dumps(data), content_type='application/json')
+		
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'success')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
+
+		#
+		# try reset with different device id
+
+		data = {'phone':admin_phone, 'country_id':country.id, 'code':'000000', 'password':'newpassword123', 'device_id':'different'}
+
+
+		# post requset
+		result = self.client_app.post("/api/resetpassword", data=json.dumps(data), content_type='application/json')
+		
+		data = json.loads(result.data.decode())
+
+		
+		self.assertEqual(data['status'], 'failure')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 202)
+
+
+		#
+		# try loggin with the new password
+		data = {'phone':admin_phone, 'country_id':country.id, 'password':'newpassword123', 'device_id':testDeviceId}
+
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+	
 	def test_getPermission(self):
 		''' tests getpermission route'''
 

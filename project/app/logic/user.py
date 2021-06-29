@@ -1,8 +1,14 @@
-from ..models import db, Users, Status, Permission, UserVerificationNumber
+from ..models import db, Users, Status, Permission, UserVerificationNumber, LoginDeviceIds
 from ..extensions import check_password_hash, generate_password_hash, datetime
 
 import uuid
 import random
+
+##
+# in test mode the sms code is accebteble if the user logged-in from the same device
+##
+
+TEST_MODE:bool = True
 
 # helper fuctions
 def _createVerifyCode():
@@ -17,11 +23,19 @@ def _createVerifyCode():
 		break
 	return code
 
-def _checkCode(user_id, code, maxTimeDays=1, deleteCode=False):
+def _checkCode(user_id, code, maxTimeDays=1, deleteCode=False, deviceID:str =''):
 	''' check if the code is exist or not with the user
 		if deleteCode set to True then the code will be deleted in case if success
 		return True if its valid code else False
 		NOTE: the code will be deleted if its expired'''
+
+	# TODO: delete this after activate the sms code
+	if TEST_MODE and deviceID:
+		# check if the user logged-in with this user before
+		user = Users.query.get(user_id)
+		if user:
+			return _checkLoginUserWithDevice(user=user, deviceID=deviceID)
+		
 
 	# get the Verification details
 	VerifyCode = UserVerificationNumber.query.filter_by(user_id=user_id).first()
@@ -87,9 +101,42 @@ def _createPublicId():
 		# unique
 		return code
 
+# login the user with the device
+def _loginUserWithDevice(userPhone:str, deviceID:str):
+
+	user = Users.query.filter_by(phone=userPhone).first()
+
+	if not user:
+		return
+
+	# get the device if found before
+	device = LoginDeviceIds.query.filter_by(device_id=deviceID).first()
+
+	if not device:
+		device = LoginDeviceIds(device_id=deviceID)
+
+		db.session.add(device)
+		db.session.commit()
+
+	# add to the user devices
+	user.devices.append(device)
+
+def _checkLoginUserWithDevice(user:Users, deviceID:str)-> bool:
+	'''check if the user logged with this device before'''
+	
+	device = LoginDeviceIds.query.filter_by(device_id=deviceID).first()
+
+	if not device:
+		return False
+	
+	if device in user.devices:
+		return True
+
+	return False
+
 
 # User model
-def login(userPhone, userPassword):
+def login(userPhone, userPassword, deviceID: str = ''):
 	""" return True if the phone and the password are correct!"""
 	
 	# check if the user exist .
@@ -100,6 +147,10 @@ def login(userPhone, userPassword):
 	# check if the password is correct
 	if not check_password_hash(user.password, str(userPassword)):
 		return False
+
+	if deviceID:
+		# register the user login with this device
+		_loginUserWithDevice(userPhone=userPhone, deviceID=deviceID)
 
 	return True
 
@@ -235,7 +286,7 @@ def forgotPassword(phone):
 
 	return userCode
 
-def resetPassword(code, phone, newPassword=None):
+def resetPassword(code, phone, newPassword=None, deviceID: str = ''):
 	''' check if the code is valid or not, if newPassword given it will be reset'''
 	# first get the user
 	user = Users.query.filter_by(phone=phone).first()
@@ -243,7 +294,7 @@ def resetPassword(code, phone, newPassword=None):
 		return False
 
 	# check the code
-	if not _checkCode(user.id, code, deleteCode=bool(newPassword)):
+	if not _checkCode(user.id, code, deleteCode=bool(newPassword), deviceID=deviceID):
 		# if code not valid
 		return False
 

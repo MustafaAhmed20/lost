@@ -24,6 +24,9 @@ def loginUserRoute():
 
 		# this used to validate the phone number
 		userCountryID = post_data.get('country_id')
+		
+		# the device id
+		deviceID = post_data.get('device_id')
 	except Exception as e:
 
 		result['status'] = status['failure']
@@ -51,7 +54,7 @@ def loginUserRoute():
 		result['message'] = 'phone number not pass the validation'
 		return make_response(jsonify(result), 400)
 
-	if login(userPhone=phone, userPassword=password):
+	if login(userPhone=phone, userPassword=password, deviceID=deviceID):
 		# generate token
 		user = getUser(phone=phone)
 
@@ -85,7 +88,7 @@ def checkLoginRoute():
 	try:
 		payload = jwt.decode(token, current_app.config.get('SECRET_KEY'), algorithms=['HS256'])
 		userPublicId = payload['user']
-	except (jwt.ExpiredSignatureError, InvalidTokenError) as e:
+	except (jwt.ExpiredSignatureError, jwt.InvalidTokenError) as e:
 		result['status'] = status['failure']
 		result['message']  = 'Signature expired. Please log in again.'
 		return make_response(jsonify(result), 202)
@@ -420,6 +423,7 @@ def resetPasswordRoute():
 	userPhone = post_data.get('phone')
 	code = post_data.get('code')
 	password = post_data.get('password')
+	deviceID = post_data.get('device_id')
 	
 	# this used to validate the phone number
 	userCountryID = post_data.get('country_id')
@@ -447,7 +451,7 @@ def resetPasswordRoute():
 	if not password:
 		# this mean only validate the code withot reset the password
 		
-		success =  resetPassword(code=code, phone=userPhone)
+		success =  resetPassword(code=code, phone=userPhone, deviceID=deviceID)
 
 		if not success:
 			# the code not valid
@@ -473,7 +477,7 @@ def resetPasswordRoute():
 			return make_response(jsonify(result), 400)
 
 		# now the check the code and change the password
-		success =  resetPassword(code=code, phone=userPhone, newPassword=password)
+		success =  resetPassword(code=code, phone=userPhone, newPassword=password, deviceID=deviceID)
 
 		if not success:
 			# the code not valid

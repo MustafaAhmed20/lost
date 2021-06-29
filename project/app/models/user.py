@@ -1,6 +1,12 @@
 from . import db
 from . import datetime
 
+# devices secoundry table
+association_user_device_table = db.Table('association_user_device', db.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('device_id', db.Integer, db.ForeignKey('login_device_ids.id'))
+)
+
 class Users(db.Model):
 	__name__ = 'Users'
 	__tablename__ = 'users'
@@ -21,6 +27,12 @@ class Users(db.Model):
 
 	# the comments made by this user
 	comments = db.relationship('Comment', lazy='dynamic')
+
+	# the devices that the user logged-in with
+	devices = db.relationship(
+        "LoginDeviceIds",
+        secondary = association_user_device_table,
+        back_populates = "users")
 
 	def toDict(self):
 		""" return dict representation of the object """
@@ -69,3 +81,18 @@ class UserVerificationNumber(db.Model):
 	code =  db.Column(db.String(10), nullable=False, unique=True)
 
 	create_date = db.Column(db.DATETIME, default=datetime.datetime.utcnow)
+
+class LoginDeviceIds(db.Model):
+	''' This model used to save ids of the Devices that logged-in'''
+
+	__name__ = 'LoginDeviceIds'
+	__tablename__ = 'login_device_ids'
+
+	id = db.Column(db.Integer, primary_key=True)
+
+	device_id = db.Column(db.String(20), nullable=False, unique=True)
+
+	users = db.relationship(
+        "Users",
+        secondary = association_user_device_table,
+        back_populates = "devices")
