@@ -203,7 +203,7 @@ def getOperation(**filters):
 		del allowedFilters['lng']
 		pass
 
-	return baseQuery.filter_by(**allowedFilters).all()
+	return baseQuery.filter_by(**allowedFilters).order_by(Operations.add_date.desc()).all()
 
 def updateOperationStatus(newStatus, operation=None, operationId=None):
 	''' update operation status - return true is success else false'''
