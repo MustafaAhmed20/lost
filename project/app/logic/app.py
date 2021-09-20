@@ -38,8 +38,12 @@ def validatePassword(value, minLength):
 		# emptiness not checked here
 		raise ValueError('value must not be empty')
 
-	if len(value) < minLength:
-		return False
+	
+	##
+	## trial period - TODO: change back when lunch
+
+	# if len(value) < minLength:
+	# 	return False
 
 	# must contain at least one number
 	pattren1 = r'\d'
@@ -47,7 +51,8 @@ def validatePassword(value, minLength):
 	# must contain at least one letter
 	pattren2 = r'[a-zA-Z]'
 
-	if not re.search (pattren1, value) or not re.search (pattren2, value):
+	# if not re.search (pattren1, value) or not re.search (pattren2, value):
+	if not re.search (pattren2, value):
 		return False
 
 	return True

@@ -322,7 +322,7 @@ def updateOperationStatusRoute():
 
 	if not newStatus or not operation_id:
 		result['status'] = status['failure']
-		result['message']  = "required data 'date' not submitted"
+		result['message']  = "required data not submitted"
 		return make_response(jsonify(result), 400)
 
 	# get the user who want to make this change(must be admin or same user who created the operation)
