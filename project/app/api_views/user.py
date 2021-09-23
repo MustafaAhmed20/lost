@@ -10,7 +10,7 @@ from . import (login, getUser, addUser, getCountry, validatePassword, validatePh
 				getPermission, getStatus)
 
 # the shortest length for passwords
-MIN_PASSWORD_LENGTH = 5
+MIN_PASSWORD_LENGTH = 4
 
 @api.route('/login', methods=['POST'])
 def loginUserRoute():

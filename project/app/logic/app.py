@@ -38,7 +38,6 @@ def validatePassword(value, minLength):
 		# emptiness not checked here
 		raise ValueError('value must not be empty')
 
-	
 	##
 	## trial period - TODO: change back when lunch
 
@@ -52,7 +51,7 @@ def validatePassword(value, minLength):
 	pattren2 = r'[a-zA-Z]'
 
 	# if not re.search (pattren1, value) or not re.search (pattren2, value):
-	if not re.search (pattren2, value):
+	if not re.search (pattren1, value):
 		return False
 
 	return True
