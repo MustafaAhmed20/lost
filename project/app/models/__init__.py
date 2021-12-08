@@ -44,8 +44,20 @@ def defaultData(app, db):
 						password=generate_password_hash(os.getenv('admin_pass')),
 						public_id=uuid.uuid4())
 
+	# the store account
+	store_user = Users(name='store', phone=os.getenv('store_phone'), 
+						password=generate_password_hash(os.getenv('store_pass')),
+						public_id=uuid.uuid4())
+
 	active_user.users.append(admin_user)
+	active_user.users.append(store_user)
+	
+	# the admins
 	admin.users.append(admin_user)
+
+	# add the store user to be normal user
+	normal_user.users.append(store_user)
+
 
 	# age
 	first_age = Age(min_age=1, max_age=5)
@@ -56,6 +68,7 @@ def defaultData(app, db):
 	sixth_age = Age(min_age=30, max_age=50)
 	last_age = Age(min_age=50, max_age=100)
 
+	# Countres
 	db.session.add(sudan)
 	db.session.add(egypt)
 	
@@ -63,16 +76,23 @@ def defaultData(app, db):
 	db.session.add(on_hold)
 	db.session.add(closed)
 	
+	# types
 	db.session.add(lost)
 	db.session.add(found)
 	
+	# Statuses
 	db.session.add(active_user)
 	db.session.add(wait)
 	db.session.add(in_active)
+	
+	# Permissions
 	db.session.add(admin)
 	db.session.add(manager)
 	db.session.add(normal_user)
+	
+	# the users
 	db.session.add(admin_user)
+	db.session.add(store_user)
 	
 	# add ages
 	db.session.add_all([first_age, second_age, third_age, fourth_age, fifth_age, sixth_age, last_age])

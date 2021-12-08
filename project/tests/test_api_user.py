@@ -34,6 +34,31 @@ class TestUserApi(TestConfig):
 		self.assertEqual(result.content_type,  'application/json')
 		self.assertEqual(result.status_code, 200)
 
+	def test_login_store(self):
+		""" test the login for the store user"""
+		
+		store_phone = os.getenv('store_phone')
+		store_pass = os.getenv('store_pass')
+		
+		if not store_phone or not store_pass:
+			raise ValueError('Environment variables not found!')
+		
+		# the user country
+		country = getCountry(phoneCode=20)
+
+		data = {'phone':store_phone, 'password':store_pass, 'country_id':country.id}
+		
+		# post requset
+		result = self.client_app.post("/api/login", data=json.dumps(data), content_type='application/json')
+
+		data = json.loads(result.data.decode())
+
+		self.assertEqual(data['status'], 'success')
+
+		self.assertTrue(data['data']['token'], 'no token returned')
+		self.assertEqual(result.content_type,  'application/json')
+		self.assertEqual(result.status_code, 200)
+
 	def test_login2(self):
 		""" test the login route with wrong password"""
 		admin_phone = os.getenv('admin_phone')
